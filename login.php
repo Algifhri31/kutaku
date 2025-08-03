@@ -14,252 +14,277 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $conn->real_escape_string($_POST['username']);
     $password = $_POST['password'];
 
-    // Cari user di database
     $result = $conn->query("SELECT * FROM admin WHERE username='$username'");
 
     if ($result->num_rows > 0) {
         $admin = $result->fetch_assoc();
-
-        // Kalau password belum di-hash, cek langsung
-        if ($password === $admin['password']) {
+        if ($password === $admin['password']) { // In a real app, use password_verify
             session_regenerate_id(true);
             $_SESSION['admin_logged_in'] = true;
             $_SESSION['admin_username'] = $username;
-
-            // Redirect ke dashboard admin
             header("Location: admin_dashboard.php");
             exit;
         } else {
-            $error = "Password salah!";
+            $error = "Username atau password salah.";
         }
     } else {
-        $error = "Username tidak ditemukan!";
+        $error = "Username atau password salah.";
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>Login Admin</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Kutaku</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        :root {
+            --background-light: #F8F9FA;
+            --white: #FFFFFF;
+            --gray-100: #F1F3F5;
+            --gray-300: #DEE2E6;
+            --gray-500: #ADB5BD;
+            --gray-700: #495057;
+            --gray-900: #212529;
+            --blue-500: #3366FF;
+            --blue-600: #2a55d9;
+            --red-500: #E03131;
+            --red-100: #FFECEC;
+        }
+
+        * {
             margin: 0;
             padding: 0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .login-container {
-            max-width: 380px;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            padding: 40px 32px;
-            position: relative;
-            overflow: hidden;
             box-sizing: border-box;
-            margin: 0 auto;
         }
-        .login-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            pointer-events: none;
+
+        html, body {
+            height: 100%;
         }
-        h2 {
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-light);
+            color: var(--gray-900);
+        }
+
+        .login-wrapper {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            background-color: var(--white);
+            overflow: hidden;
+        }
+
+        .login-promo {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 64px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             text-align: center;
-            color: #ffffff;
-            margin: 0 0 28px 0;
+            color: var(--white);
+        }
+
+        .promo-content {
+            max-width: 450px;
+        }
+
+        .promo-content h1 {
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .promo-content p {
+            font-size: 20px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .login-form-container {
+            flex: 1;
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-wrapper {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .form-wrapper .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 24px;
+        }
+
+        .form-wrapper .logo span {
+            color: var(--blue-500);
+        }
+
+        .form-wrapper h2 {
             font-size: 28px;
             font-weight: 600;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            box-sizing: border-box;
+            margin-bottom: 8px;
         }
-        label {
-            font-weight: 500;
-            color: #ffffff;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-            position: relative;
-            z-index: 1;
+
+        .form-wrapper .subtitle {
+            color: var(--gray-700);
+            margin-bottom: 32px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
             display: block;
-            width: 100%;
-            margin: 0;
-            padding: 0;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--gray-700);
         }
-        input[type="text"], input[type="password"] {
+
+        .input-group input {
             width: 100%;
-            padding: 14px 16px;
-            margin: 6px 0 18px 0;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            font-size: 15px;
-            color: #ffffff;
-            transition: all 0.3s ease;
-            position: relative;
-            z-index: 1;
-            box-sizing: border-box;
+            padding: 12px 16px;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--blue-500);
+            box-shadow: 0 0 0 3px rgba(51, 102, 255, 0.15);
+        }
+
         .password-container {
             position: relative;
-            width: 100%;
         }
+
         .password-toggle {
             position: absolute;
-            right: 16px;
             top: 50%;
+            right: 12px;
             transform: translateY(-50%);
             background: none;
             border: none;
-            color: #000000;
             cursor: pointer;
-            font-size: 16px;
-            z-index: 2;
-            transition: color 0.3s ease;
-            padding: 0;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Courier New', monospace;
+            color: var(--gray-500);
+            font-size: 20px;
+            padding: 4px;
+            line-height: 1;
         }
-        .password-toggle:hover {
-            color: #333333;
-        }
-        .password-toggle:focus {
-            outline: none;
-        }
-        input[type="text"]::placeholder, input[type="password"]::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-        input[type="password"] {
-            padding-right: 50px;
-        }
-        input[type="text"]:focus, input[type="password"]:focus {
-            border: 1.5px solid rgba(255, 255, 255, 0.8);
-            outline: none;
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-        }
-        button[type="submit"] {
+
+        .btn-submit {
             width: 100%;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.3);
             padding: 14px;
-            border-radius: 12px;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--blue-500);
+            color: var(--white);
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            z-index: 1;
-            box-sizing: border-box;
-            margin: 0;
+            transition: background-color 0.2s, transform 0.2s;
+            margin-top: 16px;
         }
-        button[type="submit"]:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+
+        .btn-submit:hover {
+            background-color: var(--blue-600);
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
-        .message {
-            text-align: center;
-            margin: 0 0 18px 0;
-            padding: 12px;
-            border-radius: 12px;
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            box-sizing: border-box;
-        }
+
         .message.error {
-            background: rgba(255, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            color: #ff6b6b;
-            border: 1px solid rgba(255, 107, 107, 0.3);
-        }
-        .back-link {
-            margin: 20px 0 0 0;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px;
+            margin-bottom: 24px;
+            border-radius: 8px;
+            background-color: var(--red-100);
+            color: var(--red-500);
+            border: 1px solid var(--red-500);
             text-align: center;
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        form {
-            width: 100%;
-            position: relative;
-            z-index: 1;
-            margin: 0;
-            padding: 0;
-        }
-        form * {
-            box-sizing: border-box;
-        }
-        .back-link a {
-            color: rgba(255, 255, 255, 0.9);
-            text-decoration: none;
-            font-weight: 500;
             font-size: 14px;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
+
+        .back-link {
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .back-link a {
+            color: var(--gray-700);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
         .back-link a:hover {
-            color: #ffffff;
+            color: var(--blue-500);
             text-decoration: underline;
-            transform: translateX(-3px);
         }
+
+        @media (max-width: 800px) {
+            .login-promo {
+                display: none;
+            }
+            .login-form-container {
+                padding: 32px;
+            }
+            .form-wrapper {
+                max-width: 100%;
+            }
+        }
+
     </style>
 </head>
-
 <body>
-    <div class="login-container">
-        <h2>Login Admin</h2>
-        <?php if (isset($error))
-            echo "<div class='message error'>$error</div>"; ?>
-        <form method="POST" action="">
-            <label>Username:</label>
-            <input type="text" name="username" required>
-            <label>Password:</label>
-            <div class="password-container">
-                <input type="password" name="password" id="password" required>
-                <button type="button" class="password-toggle" onclick="togglePassword()">
-                    👁
-                </button>
+    <div class="login-wrapper">
+        <div class="login-promo">
+            <div class="promo-content">
+                <h1>Kutaku Admin Panel</h1>
+                <p>Manajemen konten dan data untuk website Desa Kuala Tanjung.</p>
             </div>
-            <button type="submit">Login</button>
-        </form>
-        <div class="back-link">
-            <a href="index.php">← Kembali ke Website</a>
+        </div>
+        <div class="login-form-container">
+            <div class="form-wrapper">
+                <div class="logo">Kutaku<span>.</span></div>
+                <h2>Selamat Datang Kembali</h2>
+                <p class="subtitle">Silakan masuk untuk melanjutkan.</p>
+
+                <?php if (isset($error)): ?>
+                    <div class="message error"><?php echo htmlspecialchars($error); ?></div>
+                <?php endif; ?>
+
+                <form method="POST" action="">
+                    <div class="input-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <div class="password-container">
+                            <input type="password" id="password" name="password" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword()">👁️</button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit">Login</button>
+                </form>
+                <div class="back-link">
+                    <a href="index.php">← Kembali ke Website</a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -267,16 +292,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         function togglePassword() {
             const passwordInput = document.getElementById('password');
             const toggleButton = document.querySelector('.password-toggle');
-            
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
-                toggleButton.innerHTML = '👁‍🗨️';
+                toggleButton.textContent = '🙈';
             } else {
                 passwordInput.type = 'password';
-                toggleButton.innerHTML = '👁';
+                toggleButton.textContent = '👁️';
             }
         }
     </script>
 </body>
-
 </html>
