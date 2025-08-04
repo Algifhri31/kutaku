@@ -191,6 +191,9 @@ include 'koneksi.php';
             .galeri-foto-grid {
                 grid-template-columns: repeat(2, 1fr) !important;
             }
+            .testimonial-form-container form > div {
+                grid-template-columns: 1fr !important;
+            }
         }
     </style>
 </head>
@@ -491,6 +494,61 @@ include 'koneksi.php';
             <section class="section abuabu">
                 <div class="container">
                     <h2 class="section-title">Testimoni Pengunjung</h2>
+                    
+                    <!-- Form Testimonial untuk Pengunjung -->
+                    <div class="testimonial-form-container" style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 40px;">
+                        <h3 style="color: #2c3e50; margin-bottom: 20px; text-align: center;">Bagikan Pengalaman Anda</h3>
+                        
+                        <?php if (isset($_SESSION['success_message'])): ?>
+                            <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
+                                <i class="fas fa-check-circle"></i> <?= htmlspecialchars($_SESSION['success_message']) ?>
+                            </div>
+                            <?php unset($_SESSION['success_message']); ?>
+                        <?php endif; ?>
+                        
+                        <?php if (isset($_SESSION['error_message'])): ?>
+                            <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
+                                <i class="fas fa-exclamation-circle"></i> <?= htmlspecialchars($_SESSION['error_message']) ?>
+                            </div>
+                            <?php unset($_SESSION['error_message']); ?>
+                        <?php endif; ?>
+                        <form action="submit_testimonial.php" method="POST" style="max-width: 600px; margin: 0 auto;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                                <div>
+                                    <label for="nama" style="display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50;">Nama Lengkap *</label>
+                                    <input type="text" id="nama" name="nama" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem;">
+                                </div>
+                                <div>
+                                    <label for="profesi" style="display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50;">Profesi *</label>
+                                    <input type="text" id="profesi" name="profesi" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem;">
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 20px;">
+                                <label for="testimoni" style="display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50;">Testimoni *</label>
+                                <textarea id="testimoni" name="testimoni" required rows="4" placeholder="Bagikan pengalaman Anda mengunjungi Pantai Sejarah..." style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem; resize: vertical;"></textarea>
+                            </div>
+                            
+                            <div style="margin-bottom: 20px;">
+                                <label for="rating" style="display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50;">Rating *</label>
+                                <select id="rating" name="rating" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem;">
+                                    <option value="">Pilih rating</option>
+                                    <option value="5">⭐⭐⭐⭐⭐ (5 - Sangat Baik)</option>
+                                    <option value="4">⭐⭐⭐⭐ (4 - Baik)</option>
+                                    <option value="3">⭐⭐⭐ (3 - Cukup)</option>
+                                    <option value="2">⭐⭐ (2 - Kurang)</option>
+                                    <option value="1">⭐ (1 - Sangat Kurang)</option>
+                                </select>
+                            </div>
+                            
+                            <div style="text-align: center;">
+                                <button type="submit" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: transform 0.3s ease;">
+                                    <i class="fas fa-paper-plane"></i> Kirim Testimoni
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
                     <div class="testimonial-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px;">
                         <?php
                         $testimonials = $conn->query("SELECT * FROM testimonial_pantai_sejarah WHERE status = 'active' ORDER BY created_at DESC LIMIT 3");

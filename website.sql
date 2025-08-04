@@ -71,12 +71,15 @@ INSERT INTO `berita` (`id`, `judul`, `draft`, `penulis`, `tanggal_dibuat`, `gamb
 --
 
 CREATE TABLE `inovasi` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `kategori` enum('pendidikan','pertanian','teknologi') NOT NULL,
   `judul` varchar(255) NOT NULL,
   `deskripsi` text NOT NULL,
-  `penulis` varchar(100) NOT NULL,
   `gambar` varchar(255) DEFAULT NULL,
-  `tanggal_dibuat` datetime DEFAULT current_timestamp()
+  `tanggal` date NOT NULL,
+  `status` enum('active','inactive') DEFAULT 'active',
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -172,6 +175,23 @@ CREATE TABLE `objek_wisata` (
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `testimonial_pantai_sejarah`
+--
+
+CREATE TABLE `testimonial_pantai_sejarah` (
+  `id` int(11) NOT NULL,
+  `nama` varchar(100) NOT NULL,
+  `profesi` varchar(100) NOT NULL,
+  `testimoni` text NOT NULL,
+  `rating` int(1) NOT NULL,
+  `avatar` varchar(255) DEFAULT NULL,
+  `status` enum('pending','active','rejected') DEFAULT 'pending',
+  `created_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Indexes for dumped tables
 --
 
@@ -231,6 +251,12 @@ ALTER TABLE `objek_wisata`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indeks untuk tabel `testimonial_pantai_sejarah`
+--
+ALTER TABLE `testimonial_pantai_sejarah`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT untuk tabel yang dibuang
 --
 
@@ -286,6 +312,12 @@ ALTER TABLE `produk_umkm`
 -- AUTO_INCREMENT untuk tabel `objek_wisata`
 --
 ALTER TABLE `objek_wisata`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT untuk tabel `testimonial_pantai_sejarah`
+--
+ALTER TABLE `testimonial_pantai_sejarah`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 

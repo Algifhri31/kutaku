@@ -1,0 +1,7 @@
+-- Data testimonial contoh untuk Pantai Sejarah
+INSERT INTO `testimonial_pantai_sejarah` (`nama`, `profesi`, `testimoni`, `rating`, `status`, `created_at`) VALUES
+('Ahmad Rizki', 'Mahasiswa', 'Pengalaman yang luar biasa! Taman edukasi mangrove sangat informatif dan pemandu wisatanya sangat ramah. Saya belajar banyak tentang pentingnya konservasi mangrove.', 5, 'active', '2024-01-15 10:30:00'),
+('Siti Nurhaliza', 'Guru', 'Sangat cocok untuk wisata edukasi sekolah. Anak-anak sangat antusias melihat burung migrasi dan belajar tentang ekosistem mangrove. Fasilitasnya juga memadai.', 5, 'active', '2024-01-20 14:15:00'),
+('Budi Santoso', 'Fotografer', 'Spot foto yang sangat bagus! Pemandangan mangrove dan sunset sangat indah. Jalur tracking yang nyaman untuk berjalan-jalan sambil memotret.', 4, 'active', '2024-01-25 16:45:00'),
+('Dewi Sartika', 'Wiraswasta', 'Tempat yang asri dan sejuk. Cocok untuk refreshing sambil belajar. Harga tiket sangat terjangkau untuk fasilitas yang diberikan.', 4, 'active', '2024-01-30 09:20:00'),
+('Rudi Hermawan', 'Dokter', 'Udara yang segar dan pemandangan yang menyejukkan mata. Sangat membantu untuk mengurangi stress setelah bekerja. Akan kembali lagi!', 5, 'active', '2024-02-05 11:30:00'); 

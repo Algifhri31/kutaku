@@ -1692,3 +1692,34 @@ button[type="submit"]:hover {
         justify-content: center;
     }
 }
+
+/* Inovasi Card Hover Effects */
+.inovasi-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(44,62,80,0.15);
+}
+
+.inovasi-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Responsive for Detail Inovasi */
+@media (max-width: 768px) {
+    .detail-inovasi-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+    
+    .detail-inovasi h1 {
+        font-size: 2rem !important;
+    }
+    
+    .breadcrumb {
+        font-size: 0.9rem;
+        flex-wrap: wrap;
+    }
+    
+    .breadcrumb span {
+        margin: 0 5px;
+    }
+}

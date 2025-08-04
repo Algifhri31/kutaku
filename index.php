@@ -65,39 +65,6 @@
         </header>
 
         <main>
-            <!-- LAYANAN/PAKET SECTION -->
-            <section class="section abuabu" id="support">
-                <div class="container">
-                    <h2 class="section-title">Layanan Wisata Kami</h2>
-                    <div class="layanan-grid">
-                        <div class="layanan-card">
-                            <div class="layanan-icon"><i class="fa-solid fa-plane"></i></div>
-                            <h3>Paket Wisata</h3>
-                            <p>Paket wisata lengkap dengan transportasi, akomodasi, dan pemandu wisata profesional.</p>
-                            <a href="#" class="layanan-btn">Lihat Paket</a>
-                        </div>
-                        <div class="layanan-card">
-                            <div class="layanan-icon"><i class="fa-solid fa-hotel"></i></div>
-                            <h3>Reservasi Hotel</h3>
-                            <p>Booking hotel terbaik dengan harga kompetitif di berbagai destinasi wisata Indonesia.</p>
-                            <a href="#" class="layanan-btn">Booking Hotel</a>
-                        </div>
-                        <div class="layanan-card">
-                            <div class="layanan-icon"><i class="fa-solid fa-car"></i></div>
-                            <h3>Rental Mobil</h3>
-                            <p>Layanan rental mobil dengan sopir profesional untuk perjalanan yang nyaman dan aman.</p>
-                            <a href="#" class="layanan-btn">Rental Mobil</a>
-                        </div>
-                        <div class="layanan-card">
-                            <div class="layanan-icon"><i class="fa-solid fa-camera"></i></div>
-                            <h3>Fotografi Wisata</h3>
-                            <p>Jasa fotografi profesional untuk mengabadikan momen indah perjalanan Anda.</p>
-                            <a href="#" class="layanan-btn">Booking Foto</a>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
             <!-- GALLERY PREVIEW SECTION -->
             <section class="section" id="gallery">
                 <div class="container">

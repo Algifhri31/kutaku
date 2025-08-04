@@ -345,6 +345,50 @@ if ($page == 'produk-umkm') {
         exit;
     }
     
+    // CRUD untuk Testimonial
+    if ($page == 'testimonial-pantai') {
+        if (isset($_POST['action'])) {
+            $id = intval($_POST['id']);
+            
+            if ($_POST['action'] == 'approve') {
+                $stmt = $conn->prepare("UPDATE testimonial_pantai_sejarah SET status = 'active' WHERE id = ?");
+                $stmt->bind_param("i", $id);
+                $stmt->execute();
+                $stmt->close();
+                $_SESSION['message_testimonial'] = "Testimonial berhasil disetujui!";
+            } elseif ($_POST['action'] == 'reject') {
+                $stmt = $conn->prepare("UPDATE testimonial_pantai_sejarah SET status = 'rejected' WHERE id = ?");
+                $stmt->bind_param("i", $id);
+                $stmt->execute();
+                $stmt->close();
+                $_SESSION['message_testimonial'] = "Testimonial berhasil ditolak!";
+            } elseif ($_POST['action'] == 'delete') {
+                // Ambil info avatar untuk dihapus
+                $stmt = $conn->prepare("SELECT avatar FROM testimonial_pantai_sejarah WHERE id = ?");
+                $stmt->bind_param("i", $id);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $testimonial = $result->fetch_assoc();
+                $stmt->close();
+                
+                // Hapus file avatar jika ada
+                if ($testimonial['avatar'] && file_exists($testimonial['avatar'])) {
+                    unlink($testimonial['avatar']);
+                }
+                
+                // Hapus dari database
+                $stmt = $conn->prepare("DELETE FROM testimonial_pantai_sejarah WHERE id = ?");
+                $stmt->bind_param("i", $id);
+                $stmt->execute();
+                $stmt->close();
+                $_SESSION['message_testimonial'] = "Testimonial berhasil dihapus!";
+            }
+            
+            header('Location: admin_dashboard.php?page=testimonial-pantai');
+            exit;
+        }
+    }
+
     // CRUD untuk Objek Wisata
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['tambah_wisata'])) {
         $nama_wisata = $_POST['nama_wisata'];
@@ -523,6 +567,76 @@ if ($page == 'testimonial-pantai') {
     }
 }
 
+// Inovasi Management (Pendidikan, Pertanian, Teknologi)
+if (in_array($page, ['inovasi-pendidikan', 'inovasi-pertanian', 'inovasi-teknologi'])) {
+    $kategori = str_replace('inovasi-', '', $page);
+    
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['tambah_inovasi'])) {
+        $judul = $_POST['judul_inovasi'];
+        $deskripsi = $_POST['deskripsi_inovasi'];
+        $tanggal = $_POST['tanggal_inovasi'];
+        $target_dir = "uploads/";
+        $target_file = $target_dir . time() . "_" . basename($_FILES["gambar_inovasi"]["name"]);
+        
+        if (move_uploaded_file($_FILES["gambar_inovasi"]["tmp_name"], $target_file)) {
+            $stmt = $conn->prepare("INSERT INTO inovasi (kategori, judul, deskripsi, gambar, tanggal) VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssss", $kategori, $judul, $deskripsi, $target_file, $tanggal);
+            if ($stmt->execute()) {
+                $_SESSION['message_inovasi'] = "Inovasi berhasil ditambahkan!";
+            } else {
+                $_SESSION['error_inovasi'] = "Gagal menambahkan inovasi.";
+            }
+            $stmt->close();
+        } else {
+            $_SESSION['error_inovasi'] = "Gagal mengupload gambar.";
+        }
+        header("Location: admin_dashboard.php?page=$page");
+        exit;
+    }
+    
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_inovasi'])) {
+        $id = $_POST['id'];
+        $judul = $_POST['judul_inovasi'];
+        $deskripsi = $_POST['deskripsi_inovasi'];
+        $tanggal = $_POST['tanggal_inovasi'];
+        $gambar = $_POST['gambar_lama'];
+        
+        if (!empty($_FILES['gambar_inovasi']['name'])) {
+            $target_dir = "uploads/";
+            $target_file = $target_dir . time() . "_" . basename($_FILES["gambar_inovasi"]["name"]);
+            if (move_uploaded_file($_FILES["gambar_inovasi"]["tmp_name"], $target_file)) {
+                if (!empty($gambar) && file_exists($gambar)) {
+                    unlink($gambar);
+                }
+                $gambar = $target_file;
+            }
+        }
+        
+        $stmt = $conn->prepare("UPDATE inovasi SET judul=?, deskripsi=?, gambar=?, tanggal=? WHERE id=?");
+        $stmt->bind_param("ssssi", $judul, $deskripsi, $gambar, $tanggal, $id);
+        if ($stmt->execute()) {
+            $_SESSION['message_inovasi'] = "Inovasi berhasil diupdate!";
+        } else {
+            $_SESSION['error_inovasi'] = "Gagal update inovasi.";
+        }
+        $stmt->close();
+        header("Location: admin_dashboard.php?page=$page");
+        exit;
+    }
+    
+    if ($action=='hapus' && isset($_GET['id'])) {
+        $id = intval($_GET['id']);
+        $q = $conn->query("SELECT gambar FROM inovasi WHERE id=$id");
+        if ($q && $row = $q->fetch_assoc()) {
+            if (!empty($row['gambar']) && file_exists($row['gambar'])) unlink($row['gambar']);
+        }
+        $conn->query("DELETE FROM inovasi WHERE id=$id");
+        $_SESSION['message_inovasi'] = "Inovasi berhasil dihapus.";
+        header("Location: admin_dashboard.php?page=$page");
+        exit;
+    }
+}
+
 // Get edit data if needed
 $edit_berita = null;
 $edit_inovasi = null;
@@ -534,7 +648,7 @@ if ($action == 'edit' && isset($_GET['id'])) {
     if ($page == 'berita') {
         $q = $conn->query("SELECT * FROM berita WHERE id=$edit_id");
         $edit_berita = $q ? $q->fetch_assoc() : null;
-    } elseif ($page == 'inovasi') {
+    } elseif (in_array($page, ['inovasi-pendidikan', 'inovasi-pertanian', 'inovasi-teknologi'])) {
         $q = $conn->query("SELECT * FROM inovasi WHERE id=$edit_id");
         $edit_inovasi = $q ? $q->fetch_assoc() : null;
     } elseif ($page == 'produk-umkm') {
@@ -884,6 +998,7 @@ if ($action == 'edit' && isset($_GET['id'])) {
         .dashboard-card.blue .icon { background: var(--accent-light); color: var(--accent); }
         .dashboard-card.green .icon { background: #dcfce7; color: #16a34a; }
         .dashboard-card.red .icon { background: #fee2e2; color: #dc2626; }
+        .dashboard-card.orange .icon { background: #fed7aa; color: #ea580c; }
         .dashboard-card .info .count {
             font-size: 2rem;
             font-weight: 700;
@@ -904,6 +1019,32 @@ if ($action == 'edit' && isset($_GET['id'])) {
         .status-unread { background-color: #fee2e2; color: #991b1b; }
         .status-read { background-color: #dbeafe; color: #1e40af; }
         .status-replied { background-color: #dcfce7; color: #15803d; }
+        
+        /* Testimonial Status Badges */
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-active { background: #d4edda; color: #155724; }
+        .status-rejected { background: #f8d7da; color: #721c24; }
+        
+        /* Filter Tabs */
+        .filter-tab {
+            padding: 8px 16px;
+            border: 2px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        .filter-tab.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        .filter-tab:hover {
+            background: #f8f9fa;
+        }
+        .filter-tab.active:hover {
+            background: #0056b3;
+        }
 
         .berita-item {
             display: flex;
@@ -1130,6 +1271,7 @@ if ($action == 'edit' && isset($_GET['id'])) {
                 $total_berita = $conn->query("SELECT COUNT(*) FROM berita")->fetch_row()[0];
                 $total_inovasi = $conn->query("SELECT COUNT(*) FROM inovasi")->fetch_row()[0];
                 $total_pesan = $conn->query("SELECT COUNT(*) FROM pesan_kontak WHERE status='unread'")->fetch_row()[0];
+                $total_testimonial_pending = $conn->query("SELECT COUNT(*) FROM testimonial_pantai_sejarah WHERE status='pending'")->fetch_row()[0];
                 ?>
                 <div class="dashboard-card blue">
                     <div class="icon"><i class="fa-solid fa-newspaper"></i></div>
@@ -1150,6 +1292,13 @@ if ($action == 'edit' && isset($_GET['id'])) {
                     <div class="info">
                         <div class="count"><?= $total_pesan ?></div>
                         <div class="label">Pesan Baru</div>
+                    </div>
+                </div>
+                <div class="dashboard-card orange">
+                    <div class="icon"><i class="fa-solid fa-comments"></i></div>
+                    <div class="info">
+                        <div class="count"><?= $total_testimonial_pending ?></div>
+                        <div class="label">Testimonial Pending</div>
                     </div>
                 </div>
             </div>
@@ -1675,52 +1824,163 @@ if ($action == 'edit' && isset($_GET['id'])) {
             <div class="card" id="testimonial-pantai">
                 <?php
                 $message = isset($_SESSION['message_testimonial']) ? $_SESSION['message_testimonial'] : null;
-                $error = isset($_SESSION['error_testimonial']) ? $_SESSION['error_testimonial'] : null;
-                unset($_SESSION['message_testimonial'], $_SESSION['error_testimonial']);
+                unset($_SESSION['message_testimonial']);
+                ?>
+                <?php if ($message) echo "<div class='message success'>$message</div>"; ?>
+
+                <div class="card-header">
+                    <h2>Kelola Testimonial Pantai Sejarah</h2>
+                    <p>Kelola testimonial yang dikirim oleh pengunjung</p>
+                </div>
+
+                <!-- Filter Tabs -->
+                <div class="filter-tabs" style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                    <div class="filter-tab active" data-filter="all" style="padding: 8px 16px; border: 2px solid #ddd; border-radius: 20px; cursor: pointer; background: #007bff; color: white; border-color: #007bff;">Semua</div>
+                    <div class="filter-tab" data-filter="pending" style="padding: 8px 16px; border: 2px solid #ddd; border-radius: 20px; cursor: pointer; background: white;">Pending</div>
+                    <div class="filter-tab" data-filter="active" style="padding: 8px 16px; border: 2px solid #ddd; border-radius: 20px; cursor: pointer; background: white;">Disetujui</div>
+                    <div class="filter-tab" data-filter="rejected" style="padding: 8px 16px; border: 2px solid #ddd; border-radius: 20px; cursor: pointer; background: white;">Ditolak</div>
+                </div>
+
+                <!-- Testimonial List -->
+                <div class="testimonial-list">
+                    <?php
+                    $testimonials = $conn->query("SELECT * FROM testimonial_pantai_sejarah ORDER BY created_at DESC");
+                    if ($testimonials->num_rows > 0):
+                    ?>
+                        <?php while ($testimonial = $testimonials->fetch_assoc()): ?>
+                            <div class="testimonial-card <?= $testimonial['status'] ?>" data-status="<?= $testimonial['status'] ?>" style="background: white; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-left: 4px solid #ddd;">
+                                <?php if ($testimonial['status'] == 'pending'): ?>
+                                    <div style="border-left-color: #ffc107;"></div>
+                                <?php elseif ($testimonial['status'] == 'active'): ?>
+                                    <div style="border-left-color: #28a745;"></div>
+                                <?php elseif ($testimonial['status'] == 'rejected'): ?>
+                                    <div style="border-left-color: #dc3545;"></div>
+                                <?php endif; ?>
+                                
+                                <div class="testimonial-header" style="display: flex; align-items: center; margin-bottom: 15px;">
+                                    <?php if ($testimonial['avatar']): ?>
+                                        <!-- Hapus tampilan avatar -->
+                                    <?php else: ?>
+                                        <div class="testimonial-avatar" style="width: 50px; height: 50px; background: #007bff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; margin-right: 15px;">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                    <?php endif; ?>
+                                    <div class="testimonial-info">
+                                        <h4 style="margin: 0; color: #333;"><?= htmlspecialchars($testimonial['nama']) ?></h4>
+                                        <p style="margin: 5px 0 0 0; color: #666; font-size: 0.9rem;"><?= htmlspecialchars($testimonial['profesi']) ?></p>
+                                        <span class="status-badge status-<?= $testimonial['status'] ?>" style="padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; margin-left: 10px;">
+                                            <?php
+                                            switch($testimonial['status']) {
+                                                case 'pending': echo 'Pending'; break;
+                                                case 'active': echo 'Disetujui'; break;
+                                                case 'rejected': echo 'Ditolak'; break;
+                                                default: echo 'Unknown'; break;
+                                            }
+                                            ?>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="testimonial-content" style="margin-bottom: 15px; line-height: 1.6; color: #555;">
+                                    "<?= htmlspecialchars($testimonial['testimoni']) ?>"
+                                </div>
+                                
+                                <div class="testimonial-rating" style="margin-bottom: 15px;">
+                                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                                        <i class="fa<?= $i <= $testimonial['rating'] ? 's' : 'r' ?> fa-star" style="color: #ffc107;"></i>
+                                    <?php endfor; ?>
+                                    <span style="margin-left: 10px; color: #666;">(<?= $testimonial['rating'] ?>/5)</span>
+                                </div>
+                                
+                                <div style="color: #666; font-size: 0.9rem; margin-bottom: 15px;">
+                                    <i class="fas fa-clock"></i> <?= date('d/m/Y H:i', strtotime($testimonial['created_at'])) ?>
+                                </div>
+                                
+                                <div class="testimonial-actions" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                    <?php if ($testimonial['status'] == 'pending'): ?>
+                                        <form method="POST" style="display: inline;">
+                                            <input type="hidden" name="id" value="<?= $testimonial['id'] ?>">
+                                            <input type="hidden" name="action" value="approve">
+                                            <button type="submit" class="btn-approve" style="background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 0.9rem;" onclick="return confirm('Setujui testimonial ini?')">
+                                                <i class="fas fa-check"></i> Setujui
+                                            </button>
+                                        </form>
+                                        <form method="POST" style="display: inline;">
+                                            <input type="hidden" name="id" value="<?= $testimonial['id'] ?>">
+                                            <input type="hidden" name="action" value="reject">
+                                            <button type="submit" class="btn-reject" style="background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 0.9rem;" onclick="return confirm('Tolak testimonial ini?')">
+                                                <i class="fas fa-times"></i> Tolak
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
+                                    <form method="POST" style="display: inline;">
+                                        <input type="hidden" name="id" value="<?= $testimonial['id'] ?>">
+                                        <input type="hidden" name="action" value="delete">
+                                        <button type="submit" class="btn-delete" style="background: #6c757d; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 0.9rem;" onclick="return confirm('Hapus testimonial ini? Tindakan ini tidak dapat dibatalkan.')">
+                                            <i class="fas fa-trash"></i> Hapus
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <div style="text-align: center; padding: 40px; color: #666;">
+                            <i class="fas fa-comments" style="font-size: 3rem; margin-bottom: 20px; color: #ddd;"></i>
+                            <h3>Belum ada testimonial</h3>
+                            <p>Testimonial yang dikirim oleh pengunjung akan muncul di sini.</p>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <?php if (in_array($page, ['inovasi-pendidikan', 'inovasi-pertanian', 'inovasi-teknologi'])): ?>
+            <div class="card" id="inovasi">
+                <?php
+                $message = isset($_SESSION['message_inovasi']) ? $_SESSION['message_inovasi'] : null;
+                $error = isset($_SESSION['error_inovasi']) ? $_SESSION['error_inovasi'] : null;
+                unset($_SESSION['message_inovasi'], $_SESSION['error_inovasi']);
                 ?>
                 <?php if ($error) echo "<div class='message error'>$error</div>"; ?>
                 <?php if ($message) echo "<div class='message success'>$message</div>"; ?>
 
                 <div class="card-header">
-                    <h2>Manajemen Testimonial Pantai Sejarah</h2>
-                    <a href="admin_dashboard.php?page=testimonial-pantai&action=tambah" class="btn-primary">
-                        <i class="fa-solid fa-plus"></i> Tambah Testimonial
+                    <h2>Manajemen Inovasi <?= ucfirst($kategori) ?></h2>
+                    <a href="admin_dashboard.php?page=<?= $page ?>&action=tambah" class="btn-primary">
+                        <i class="fa-solid fa-plus"></i> Tambah Inovasi
                     </a>
                 </div>
 
-                <?php if ($action=='tambah' || ($action=='edit' && isset($edit_testimonial))): ?>
+                <?php if ($action=='tambah' || ($action=='edit' && isset($edit_inovasi))): ?>
                     <div class="card-header">
-                        <h2><?= $action == 'tambah' ? 'Tambah Testimonial Baru' : 'Edit Testimonial' ?></h2>
-                        <a href="admin_dashboard.php?page=testimonial-pantai" class="btn-secondary">&larr; Kembali ke Daftar Testimonial</a>
+                        <h2><?= $action == 'tambah' ? 'Tambah Inovasi Baru' : 'Edit Inovasi' ?></h2>
+                        <a href="admin_dashboard.php?page=<?= $page ?>" class="btn-secondary">&larr; Kembali ke Daftar Inovasi</a>
                     </div>
                     <form method="POST" action="" enctype="multipart/form-data" class="modern-form">
-                        <?php if ($edit_testimonial): ?>
-                            <input type="hidden" name="id" value="<?= $edit_testimonial['id'] ?>">
-                            <input type="hidden" name="avatar_lama" value="<?= $edit_testimonial['avatar'] ?>">
+                        <?php if ($edit_inovasi): ?>
+                            <input type="hidden" name="id" value="<?= $edit_inovasi['id'] ?>">
+                            <input type="hidden" name="gambar_lama" value="<?= $edit_inovasi['gambar'] ?>">
                         <?php endif; ?>
                         
-                        <label for="nama">Nama</label>
-                        <input type="text" id="nama" name="nama" value="<?= $edit_testimonial ? htmlspecialchars($edit_testimonial['nama']) : '' ?>" required>
+                        <label for="judul_inovasi">Judul Inovasi</label>
+                        <input type="text" id="judul_inovasi" name="judul_inovasi" value="<?= $edit_inovasi ? htmlspecialchars($edit_inovasi['judul']) : '' ?>" required>
                         
-                        <label for="profesi">Profesi</label>
-                        <input type="text" id="profesi" name="profesi" value="<?= $edit_testimonial ? htmlspecialchars($edit_testimonial['profesi']) : '' ?>" required>
+                        <label for="deskripsi_inovasi">Deskripsi</label>
+                        <textarea id="deskripsi_inovasi" name="deskripsi_inovasi" rows="6" required><?= $edit_inovasi ? htmlspecialchars($edit_inovasi['deskripsi']) : '' ?></textarea>
                         
-                        <label for="testimoni">Testimoni</label>
-                        <textarea id="testimoni" name="testimoni" rows="4" required><?= $edit_testimonial ? htmlspecialchars($edit_testimonial['testimoni']) : '' ?></textarea>
+                        <label for="tanggal_inovasi">Tanggal</label>
+                        <input type="date" id="tanggal_inovasi" name="tanggal_inovasi" value="<?= $edit_inovasi ? $edit_inovasi['tanggal'] : date('Y-m-d') ?>" required>
                         
-                        <label for="rating">Rating (1-5)</label>
-                        <input type="number" id="rating" name="rating" min="1" max="5" value="<?= $edit_testimonial ? $edit_testimonial['rating'] : 5 ?>" required>
-                        
-                        <label for="avatar">Avatar (Opsional)</label>
-                        <input type="file" id="avatar" name="avatar" accept="image/*">
-                        <?php if ($edit_testimonial && $edit_testimonial['avatar']): ?>
+                        <label for="gambar_inovasi">Gambar</label>
+                        <input type="file" id="gambar_inovasi" name="gambar_inovasi" accept="image/*" <?= $edit_inovasi ? '' : 'required' ?>>
+                        <?php if ($edit_inovasi && $edit_inovasi['gambar']): ?>
                             <div style="margin-top: 8px;">
-                                <img src="<?= htmlspecialchars($edit_testimonial['avatar']) ?>" alt="Current Avatar" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;">
+                                <img src="<?= htmlspecialchars($edit_inovasi['gambar']) ?>" alt="Current Image" style="width: 200px; height: 150px; object-fit: cover; border-radius: 8px;">
                             </div>
                         <?php endif; ?>
                         
-                        <button type="submit" name="<?= $edit_testimonial ? 'update_testimonial' : 'tambah_testimonial' ?>">
-                            <?= $edit_testimonial ? 'Update Testimonial' : 'Tambah Testimonial' ?>
+                        <button type="submit" name="<?= $edit_inovasi ? 'update_inovasi' : 'tambah_inovasi' ?>">
+                            <?= $edit_inovasi ? 'Update Inovasi' : 'Tambah Inovasi' ?>
                         </button>
                     </form>
                 <?php else: ?>
@@ -1728,42 +1988,36 @@ if ($action == 'edit' && isset($_GET['id'])) {
                         <table class="admin-table">
                             <thead>
                                 <tr>
-                                    <th>Avatar</th>
-                                    <th>Nama</th>
-                                    <th>Profesi</th>
-                                    <th>Testimoni</th>
-                                    <th>Rating</th>
+                                    <th>Gambar</th>
+                                    <th>Judul</th>
+                                    <th>Deskripsi</th>
+                                    <th>Tanggal</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
-                                $testimonials = $conn->query("SELECT * FROM testimonial_pantai_sejarah ORDER BY created_at DESC");
-                                while ($testimonial = $testimonials->fetch_assoc()):
+                                $inovasi_list = $conn->query("SELECT * FROM inovasi WHERE kategori='$kategori' ORDER BY tanggal DESC");
+                                while ($inovasi = $inovasi_list->fetch_assoc()):
                                 ?>
                                 <tr>
                                     <td>
-                                        <?php if ($testimonial['avatar']): ?>
-                                            <img src="<?= htmlspecialchars($testimonial['avatar']) ?>" alt="Avatar" style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">
+                                        <?php if ($inovasi['gambar']): ?>
+                                            <img src="<?= htmlspecialchars($inovasi['gambar']) ?>" alt="Inovasi" style="width: 80px; height: 60px; object-fit: cover; border-radius: 4px;">
                                         <?php else: ?>
-                                            <div style="width: 50px; height: 50px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fa-solid fa-user" style="color: #9ca3af;"></i>
+                                            <div style="width: 80px; height: 60px; background: #e5e7eb; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fa-solid fa-image" style="color: #9ca3af;"></i>
                                             </div>
                                         <?php endif; ?>
                                     </td>
-                                    <td><?= htmlspecialchars($testimonial['nama']) ?></td>
-                                    <td><?= htmlspecialchars($testimonial['profesi']) ?></td>
-                                    <td><?= htmlspecialchars(substr($testimonial['testimoni'], 0, 100)) ?>...</td>
+                                    <td><?= htmlspecialchars($inovasi['judul']) ?></td>
+                                    <td><?= htmlspecialchars(substr($inovasi['deskripsi'], 0, 100)) ?>...</td>
+                                    <td><?= date('d/m/Y', strtotime($inovasi['tanggal'])) ?></td>
                                     <td>
-                                        <?php for ($i = 1; $i <= 5; $i++): ?>
-                                            <i class="fa-solid fa-star" style="color: <?= $i <= $testimonial['rating'] ? '#f39c12' : '#e5e7eb' ?>;"></i>
-                                        <?php endfor; ?>
-                                    </td>
-                                    <td>
-                                        <a href="admin_dashboard.php?page=testimonial-pantai&action=edit&id=<?= $testimonial['id'] ?>" class="btn-primary" style="margin-right: 8px;">
+                                        <a href="admin_dashboard.php?page=<?= $page ?>&action=edit&id=<?= $inovasi['id'] ?>" class="btn-primary" style="margin-right: 8px;">
                                             <i class="fa-solid fa-edit"></i>
                                         </a>
-                                        <a href="admin_dashboard.php?page=testimonial-pantai&action=hapus&id=<?= $testimonial['id'] ?>" class="btn-danger" onclick="return confirm('Yakin ingin menghapus testimonial ini?')">
+                                        <a href="admin_dashboard.php?page=<?= $page ?>&action=hapus&id=<?= $inovasi['id'] ?>" class="btn-danger" onclick="return confirm('Yakin ingin menghapus inovasi ini?')">
                                             <i class="fa-solid fa-trash"></i>
                                         </a>
                                     </td>
@@ -1867,6 +2121,32 @@ if ($action == 'edit' && isset($_GET['id'])) {
             }
             reader.readAsDataURL(event.target.files[0]);
         };
+
+        // Filter functionality for testimonials
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterTabs = document.querySelectorAll('.filter-tab');
+            if (filterTabs.length > 0) {
+                filterTabs.forEach(tab => {
+                    tab.addEventListener('click', function() {
+                        // Remove active class from all tabs
+                        filterTabs.forEach(t => t.classList.remove('active'));
+                        // Add active class to clicked tab
+                        this.classList.add('active');
+                        
+                        const filter = this.dataset.filter;
+                        const testimonials = document.querySelectorAll('.testimonial-card');
+                        
+                        testimonials.forEach(testimonial => {
+                            if (filter === 'all' || testimonial.dataset.status === filter) {
+                                testimonial.style.display = 'block';
+                            } else {
+                                testimonial.style.display = 'none';
+                            }
+                        });
+                    });
+                });
+            }
+        });
 
         // Functions for Pantai Sejarah management
         function editSection(id) {
