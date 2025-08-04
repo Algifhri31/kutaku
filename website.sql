@@ -131,12 +131,45 @@ CREATE TABLE `pesan_kontak` (
 
 CREATE TABLE `preview_galeri` (
   `id` int(11) NOT NULL,
-  `judul` varchar(255) NOT NULL,
-  `deskripsi` text NOT NULL,
+  `judul` varchar(255) DEFAULT NULL,
+  `deskripsi` text DEFAULT NULL,
   `gambar` varchar(255) NOT NULL,
-  `urutan` int(11) NOT NULL DEFAULT 1,
-  `created_at` timestamp DEFAULT current_timestamp()
+  `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `produk_umkm`
+--
+
+CREATE TABLE `produk_umkm` (
+  `id` int(11) NOT NULL,
+  `nama_produk` varchar(255) NOT NULL,
+  `deskripsi` text DEFAULT NULL,
+  `harga` decimal(15,2) NOT NULL,
+  `nomor_wa` varchar(20) DEFAULT NULL,
+  `gambar` varchar(255) DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur untuk tabel `objek_wisata`
+--
+
+CREATE TABLE `objek_wisata` (
+  `id` int(11) NOT NULL,
+  `nama_wisata` varchar(255) NOT NULL,
+  `deskripsi` text DEFAULT NULL,
+  `gambar` varchar(255) DEFAULT NULL,
+  `urutan` int(11) DEFAULT 0,
+  `status` enum('aktif','nonaktif') DEFAULT 'aktif',
+  `created_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Indexes for dumped tables
@@ -186,6 +219,18 @@ ALTER TABLE `preview_galeri`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indeks untuk tabel `produk_umkm`
+--
+ALTER TABLE `produk_umkm`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indeks untuk tabel `objek_wisata`
+--
+ALTER TABLE `objek_wisata`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT untuk tabel yang dibuang
 --
 
@@ -229,6 +274,18 @@ ALTER TABLE `pesan_kontak`
 -- AUTO_INCREMENT untuk tabel `preview_galeri`
 --
 ALTER TABLE `preview_galeri`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT untuk tabel `produk_umkm`
+--
+ALTER TABLE `produk_umkm`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT untuk tabel `objek_wisata`
+--
+ALTER TABLE `objek_wisata`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 

@@ -1,39 +1,32 @@
-//menu
-var tombolMenu = $(".tombol-menu");
-var menu = $("nav .menu ul");
-
-function klikMenu() {
-    tombolMenu.click(function () {
-        menu.toggle();
+$(document).ready(function() {
+    // Mobile menu toggle
+    $('#hamburger-menu').click(function() {
+        $('#nav-list').toggleClass('show');
     });
-    menu.click(function () {
-        menu.toggle();
+    
+    // Close mobile menu when clicking close button
+    $('#close-mobile-menu').click(function() {
+        $('#nav-list').removeClass('show');
     });
-}
-
-$(document).ready(function () {
-    var width = $(window).width();
-    if (width < 990) {
-        klikMenu();
-    }
-})
-
-//check lebar
-$(window).resize(function () {
-    var width = $(window).width();
-    if (width > 989) {
-        menu.css("display", "block");
-        //display:block
-    } else {
-        menu.css("display", "none");
-    }
-    klikMenu();
-});
-
-//efek scroll 
-$(document).ready(function () {
+    
+    // Close mobile menu when clicking outside
+    $(document).click(function(event) {
+        if (!$(event.target).closest('.navbar').length) {
+            $('#nav-list').removeClass('show');
+        }
+    });
+    
+    // Dropdown functionality
+    $('.dropdown').click(function(e) {
+        if ($(window).width() <= 900) {
+            e.preventDefault();
+            $(this).toggleClass('open');
+        }
+    });
+    
+    // Navbar scroll effect
     var scroll_pos = 0;
-    $(document).scroll(function () {
+    $(document).scroll(function() {
         scroll_pos = $(this).scrollTop();
         if (scroll_pos > 0) {
             $("nav").addClass("putih");
@@ -44,6 +37,17 @@ $(document).ready(function () {
             $("nav img.hitam").hide();
             $("nav img.putih").show();
         }
-    })
+    });
+    
+    // Smooth scrolling for anchor links
+    $('a[href^="#"]').click(function(e) {
+        e.preventDefault();
+        var target = $(this.getAttribute('href'));
+        if (target.length) {
+            $('html, body').animate({
+                scrollTop: target.offset().top - 70
+            }, 800);
+        }
+    });
 });
 

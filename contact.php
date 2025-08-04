@@ -59,10 +59,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['kirim_pesan'])) {
                     <a href="index.php#support">Wisata <i class="fa fa-caret-down"></i></a>
                     <ul class="dropdown-content">
                         <li><a href="index.php#support">Paket Wisata</a></li>
-                        <li><a href="index.php#gallery">Objek Wisata</a></li>
+                        <li><a href="galeri.php">Objek Wisata</a></li>
+                        <li><a href="kuta-view.php">Kuta View</a></li>
+                        <li><a href="pantai-sejarah.php">Pantai Sejarah</a></li>
                     </ul>
                 </li>
                 <li><a href="index.php#blog">Berita</a></li>
+                <li><a href="produk.php">Produk</a></li>
                 <li><a href="contact.php" class="active">Kontak</a></li>
                 <li class="login-mobile"><a href="login.php" class="tombol tombol-login">Login Admin</a></li>
             </ul>

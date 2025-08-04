@@ -39,9 +39,12 @@ include 'koneksi.php';
                     <ul class="dropdown-content">
                         <li><a href="index.php#support">Paket Wisata</a></li>
                         <li><a href="galeri.php" class="active">Objek Wisata</a></li>
+                        <li><a href="kuta-view.php">Kuta View</a></li>
+                        <li><a href="pantai-sejarah.php">Pantai Sejarah</a></li>
                     </ul>
                 </li>
                 <li><a href="index.php#blog">Berita</a></li>
+                <li><a href="produk.php">Produk</a></li>
                 <li><a href="contact.php">Kontak</a></li>
                 <li class="login-mobile"><a href="login.php" class="tombol tombol-login">Login Admin</a></li>
             </ul>
@@ -67,26 +70,58 @@ include 'koneksi.php';
                     
                     <div class="gallery-container">
                         <?php
-                        $result = mysqli_query($conn, "SELECT * FROM galeri ORDER BY created_at DESC");
+                        // Ambil data dari tabel galeri (foto yang diupload melalui dashboard) terlebih dahulu
+                        $result = mysqli_query($conn, "SELECT * FROM galeri WHERE judul IS NOT NULL AND judul != '' ORDER BY created_at DESC");
                         if ($result && mysqli_num_rows($result) > 0) {
                             while ($row = mysqli_fetch_assoc($result)) {
-                                $gambar = !empty($row['gambar']) ? htmlspecialchars($row['gambar']) : 'asset/default-image.jpg';
+                                $gambar = !empty($row['gambar']) ? htmlspecialchars($row['gambar']) : 'asset/default-product.jpg';
                                 $judul = !empty($row['judul']) ? htmlspecialchars($row['judul']) : 'Objek Wisata';
                                 $deskripsi = !empty($row['deskripsi']) ? htmlspecialchars($row['deskripsi']) : 'Keindahan alam yang memukau';
                                 
                                 echo "<div class='gallery-item'>";
+                                echo "<a href='detail-galeri.php?id=" . $row['id'] . "&type=galeri'>";
                                 echo "<div class='gallery-image'>";
                                 echo "<img src='" . $gambar . "' alt='" . $judul . "' />";
                                 echo "<div class='gallery-overlay'>";
                                 echo "<div class='gallery-info'>";
                                 echo "<h3>" . $judul . "</h3>";
                                 echo "<p>" . $deskripsi . "</p>";
+                                echo "<div class='detail-hint'>Klik untuk detail</div>";
                                 echo "</div>";
                                 echo "</div>";
                                 echo "</div>";
+                                echo "</a>";
                                 echo "</div>";
                             }
-                        } else {
+                        }
+                        
+                        // Tambahkan data dari tabel objek_wisata
+                        $result2 = mysqli_query($conn, "SELECT * FROM objek_wisata WHERE status = 'aktif' AND gambar IS NOT NULL AND gambar != '' ORDER BY urutan ASC, id DESC");
+                        if ($result2 && mysqli_num_rows($result2) > 0) {
+                            while ($row = mysqli_fetch_assoc($result2)) {
+                                $gambar = !empty($row['gambar']) ? htmlspecialchars($row['gambar']) : 'asset/default-product.jpg';
+                                $judul = !empty($row['nama_wisata']) ? htmlspecialchars($row['nama_wisata']) : 'Objek Wisata';
+                                $deskripsi = !empty($row['deskripsi']) ? htmlspecialchars($row['deskripsi']) : 'Keindahan alam yang memukau';
+                                
+                                echo "<div class='gallery-item'>";
+                                echo "<a href='detail-galeri.php?id=" . $row['id'] . "&type=objek_wisata'>";
+                                echo "<div class='gallery-image'>";
+                                echo "<img src='" . $gambar . "' alt='" . $judul . "' />";
+                                echo "<div class='gallery-overlay'>";
+                                echo "<div class='gallery-info'>";
+                                echo "<h3>" . $judul . "</h3>";
+                                echo "<p>" . $deskripsi . "</p>";
+                                echo "<div class='detail-hint'>Klik untuk detail</div>";
+                                echo "</div>";
+                                echo "</div>";
+                                echo "</div>";
+                                echo "</a>";
+                                echo "</div>";
+                            }
+                        }
+                        
+                        // Jika tidak ada data sama sekali, tampilkan foto statis
+                        if ((!$result || mysqli_num_rows($result) == 0) && (!$result2 || mysqli_num_rows($result2) == 0)) {
                             // Fallback ke foto statis jika belum ada data galeri
                             $foto_list = [
                                 ['src' => 'asset/foto1.jpg', 'title' => 'Mangrove Park', 'desc' => 'Keindahan hutan mangrove yang asri'],

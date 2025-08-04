@@ -32,8 +32,18 @@ img { max-width: 100%; display: block; }
 .dropdown-content li a:hover { background: #f0f4fa; color: #0057b8; }
 
 /* --- HERO --- */
-.hero-section { position: relative; height: 420px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.hero-section video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
+.hero-section { 
+    position: relative; 
+    height: 420px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    overflow: hidden; 
+    background: linear-gradient(rgba(44,62,80,0.6), rgba(44,62,80,0.6)), url('asset/background-bromo.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
 .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(44,62,80,0.45); z-index: 2; }
 .hero-content { position: relative; z-index: 3; text-align: center; color: #fff; }
 .hero-content h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 18px; letter-spacing: 1px; }
@@ -772,6 +782,13 @@ button[type="submit"]:hover {
     box-shadow: 0 12px 40px rgba(44,62,80,0.15);
 }
 
+.gallery-item a {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+}
+
 .gallery-image {
     position: relative;
     width: 100%;
@@ -825,6 +842,27 @@ button[type="submit"]:hover {
     line-height: 1.5;
     opacity: 0.9;
     text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    margin-bottom: 10px;
+}
+
+.gallery-info .detail-hint {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    font-style: italic;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.gallery-info .detail-hint::after {
+    content: '→';
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.gallery-item:hover .gallery-info .detail-hint::after {
+    transform: translateX(5px);
 }
 
 /* Info Grid for Gallery Page */
@@ -1124,4 +1162,533 @@ button[type="submit"]:hover {
 .back-to-website a:hover {
     color: #003e7e;
     text-decoration: underline;
+}
+
+/* --- PRODUK PAGE --- */
+.produk-hero {
+    background: linear-gradient(rgba(44,62,80,0.6), rgba(44,62,80,0.6)), url('asset/background-bromo.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.produk-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    margin-top: 32px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.produk-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(44,62,80,0.06);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid #e8e8e8;
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+.produk-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(44,62,80,0.12);
+    border-color: #0057b8;
+}
+
+.produk-image {
+    width: 100%;
+    height: 160px;
+    overflow: hidden;
+    position: relative;
+}
+
+.produk-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.produk-card:hover .produk-image img {
+    transform: scale(1.05);
+}
+
+.produk-content {
+    padding: 14px;
+}
+
+.produk-content h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #232946;
+    margin-bottom: 6px;
+    line-height: 1.2;
+}
+
+.produk-deskripsi {
+    color: #666;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin-bottom: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.produk-harga {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0057b8;
+    margin-bottom: 12px;
+}
+
+.produk-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.produk-actions .btn-primary {
+    background: #25d366;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+    flex: 1;
+    justify-content: center;
+}
+
+.produk-actions .btn-primary:hover {
+    background: #128c7e;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(37, 211, 102, 0.25);
+}
+
+.produk-actions .btn-primary i {
+    font-size: 0.9rem;
+}
+
+.no-produk {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: #888;
+}
+
+.no-produk i {
+    font-size: 4rem;
+    color: #ddd;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.no-produk h3 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+    color: #666;
+}
+
+.no-produk p {
+    font-size: 1rem;
+    color: #999;
+}
+
+.cta-content {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.cta-content h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #232946;
+    margin-bottom: 16px;
+}
+
+.cta-content p {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 32px;
+    line-height: 1.6;
+}
+
+.cta-content .tombol {
+    background: #0057b8;
+    color: #fff;
+    padding: 14px 32px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.cta-content .tombol:hover {
+    background: #003e7e;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 87, 184, 0.3);
+}
+
+/* Footer styles for produk page */
+.footer {
+    background: #232946;
+    color: #fff;
+    padding: 48px 0 24px 0;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 32px;
+    margin-bottom: 32px;
+}
+
+.footer-section h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #fff;
+}
+
+.footer-section p {
+    color: #ccc;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section ul li {
+    margin-bottom: 8px;
+}
+
+.footer-section ul li a {
+    color: #ccc;
+    transition: color 0.2s;
+}
+
+.footer-section ul li a:hover {
+    color: #00aaff;
+}
+
+.social-links {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.social-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: #0057b8;
+    color: #fff;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.social-links a:hover {
+    background: #003e7e;
+    transform: translateY(-2px);
+}
+
+.footer-bottom {
+    border-top: 1px solid #444;
+    padding-top: 24px;
+    text-align: center;
+}
+
+.footer-bottom p {
+    color: #999;
+    font-size: 0.9rem;
+}
+
+/* Responsive design for produk page */
+@media (max-width: 900px) {
+    .produk-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+    
+    .produk-hero {
+        height: 280px;
+    }
+    
+    .produk-content {
+        padding: 14px;
+    }
+    
+    .produk-image {
+        height: 160px;
+    }
+}
+
+@media (max-width: 600px) {
+    .produk-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+    }
+    
+    .produk-hero {
+        height: 220px;
+    }
+    
+    .produk-content {
+        padding: 12px;
+    }
+    
+    .produk-image {
+        height: 140px;
+    }
+    
+    .produk-content h3 {
+        font-size: 1rem;
+    }
+    
+    .produk-harga {
+        font-size: 1.1rem;
+    }
+    
+    .produk-deskripsi {
+        font-size: 0.85rem;
+    }
+    
+    .produk-actions .btn-primary {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .cta-content h2 {
+        font-size: 1.4rem;
+    }
+    
+    .cta-content p {
+        font-size: 0.95rem;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .produk-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .produk-card {
+        max-width: 320px;
+        margin: 0 auto;
+    }
+}
+
+/* Detail Produk Page */
+.detail-produk-section {
+    padding: 80px 0;
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+.detail-produk-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.detail-produk-image {
+    height: 500px;
+    overflow: hidden;
+}
+
+.detail-produk-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.detail-produk-info {
+    padding: 40px;
+}
+
+.breadcrumb {
+    margin-bottom: 20px;
+}
+
+.breadcrumb a {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.3s;
+}
+
+.breadcrumb a:hover {
+    color: #0057b8;
+}
+
+.detail-produk-info h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+.produk-harga-detail {
+    margin-bottom: 30px;
+}
+
+.produk-harga-detail .harga {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0057b8;
+    background: linear-gradient(135deg, #0057b8, #007bff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.produk-deskripsi-detail {
+    margin-bottom: 40px;
+}
+
+.produk-deskripsi-detail h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 15px;
+}
+
+.produk-deskripsi-detail p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #4a5568;
+}
+
+.produk-actions-detail {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.btn-whatsapp {
+    background: #25d366;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s;
+    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+}
+
+.btn-whatsapp:hover {
+    background: #128c7e;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+/* Responsive Design untuk Detail Produk */
+@media (max-width: 900px) {
+    .detail-produk-content {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    
+    .detail-produk-image {
+        height: 300px;
+    }
+    
+    .detail-produk-info {
+        padding: 30px;
+    }
+    
+    .detail-produk-info h1 {
+        font-size: 2rem;
+    }
+    
+    .produk-harga-detail .harga {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .detail-produk-section {
+        padding: 60px 0;
+    }
+    
+    .detail-produk-content {
+        margin: 0 16px;
+        border-radius: 12px;
+    }
+    
+    .detail-produk-image {
+        height: 250px;
+    }
+    
+    .detail-produk-info {
+        padding: 24px;
+    }
+    
+    .detail-produk-info h1 {
+        font-size: 1.8rem;
+    }
+    
+    .produk-actions-detail {
+        flex-direction: column;
+    }
+    
+    .btn-whatsapp,
+    .btn-secondary {
+        justify-content: center;
+    }
 }

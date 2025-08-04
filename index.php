@@ -8,6 +8,8 @@
     <title>Travel</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="javascript.js"></script>
 </head>
 
 <body>
@@ -36,10 +38,13 @@
                     <a href="#support">Wisata <i class="fa fa-caret-down"></i></a>
                     <ul class="dropdown-content">
                         <li><a href="#support">Paket Wisata</a></li>
-                        <li><a href="#gallery">Objek Wisata</a></li>
+                        <li><a href="galeri.php">Objek Wisata</a></li>
+                        <li><a href="kuta-view.php">Kuta View</a></li>
+                        <li><a href="pantai-sejarah.php">Pantai Sejarah</a></li>
                     </ul>
                 </li>
                 <li><a href="#blog">Berita</a></li>
+                <li><a href="produk.php">Produk</a></li>
                 <li><a href="#contact">Kontak</a></li>
                 <li class="login-mobile"><a href="login.php" class="tombol tombol-login">Login Admin</a></li>
             </ul>
@@ -51,9 +56,7 @@
         <!-- HERO SECTION -->
         <header id="home" class="hero-section">
             <div class="hero-overlay"></div>
-            <video autoplay muted loop>
-                <source src="asset/video-indonesia.mp4" type="video/mp4" />
-            </video>
+            <!-- Video removed due to missing file - using background image instead -->
             <div class="hero-content">
                 <h1>Eco Wisata Manggrove Park</h1>
                 <p>Mengenal Eco Wisata Mangrove Lebih Dekat, Menjaga Alam sekitar Lebih Erat.</p>
@@ -104,13 +107,13 @@
                         <div class="preview-grid">
                             <?php
                             include 'koneksi.php';
-                            // Ambil data dari tabel preview_galeri
-                            $result = mysqli_query($conn, "SELECT * FROM preview_galeri ORDER BY urutan ASC LIMIT 4");
+                            // Ambil data dari tabel objek_wisata (maksimal 4)
+                            $result = mysqli_query($conn, "SELECT * FROM objek_wisata WHERE status = 'aktif' ORDER BY urutan ASC LIMIT 4");
                             if ($result && mysqli_num_rows($result) > 0) {
                                 while ($row = mysqli_fetch_assoc($result)) {
                                     $gambar = !empty($row['gambar']) ? htmlspecialchars($row['gambar']) : 'asset/default-image.jpg';
-                                    $judul = htmlspecialchars($row['judul']);
-                                    $deskripsi = htmlspecialchars($row['deskripsi']);
+                                    $judul = htmlspecialchars($row['nama_wisata']);
+                                    $deskripsi = htmlspecialchars($row['deskripsi'] ?? '');
                                     
                                     echo "<div class='preview-item'>";
                                     echo "<img src='" . $gambar . "' alt='" . $judul . "' />";
@@ -121,7 +124,7 @@
                                     echo "</div>";
                                 }
                             } else {
-                                // Fallback ke foto statis jika belum ada data preview
+                                // Fallback ke foto statis jika belum ada data objek wisata
                                 $foto_list = [
                                     ['src' => 'asset/foto1.jpg', 'title' => 'Mangrove Park', 'desc' => 'Keindahan hutan mangrove yang asri'],
                                     ['src' => 'asset/foto2.jpg', 'title' => 'Pantai Sejarah', 'desc' => 'Pantai dengan pemandangan yang memukau'],

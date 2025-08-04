@@ -73,7 +73,7 @@ if ($query && mysqli_num_rows($query) > 0) {
                 <img src="<?= htmlspecialchars($sejarah['gambar']) ?>" alt="Gambar Sejarah" class="detail-img" />
             <?php endif; ?>
             <div class="detail-content">
-                <?= nl2br(htmlspecialchars($sejarah['deskripsi'])) ?>
+                <?= nl2br(htmlspecialchars($sejarah['deskripsi'] ?? '')) ?>
             </div>
         <?php else: ?>
             <div class="notfound">Data sejarah belum tersedia.</div>

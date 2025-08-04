@@ -144,12 +144,13 @@ if ($page == 'sejarah') {
 if ($page == 'galeri') {
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['tambah_galeri'])) {
         $judul = $_POST['judul_galeri'];
+        $deskripsi = $_POST['deskripsi_galeri'];
         $target_dir = "uploads/";
         $target_file = $target_dir . time() . "_" . basename($_FILES["gambar_galeri"]["name"]);
         
         if (move_uploaded_file($_FILES["gambar_galeri"]["tmp_name"], $target_file)) {
-            $stmt = $conn->prepare("INSERT INTO galeri (judul, gambar) VALUES (?, ?)");
-            $stmt->bind_param("ss", $judul, $target_file);
+            $stmt = $conn->prepare("INSERT INTO galeri (judul, deskripsi, gambar) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $judul, $deskripsi, $target_file);
             if ($stmt->execute()) {
                 $_SESSION['message_galeri'] = "Foto galeri berhasil ditambahkan!";
             } else {
@@ -171,6 +172,40 @@ if ($page == 'galeri') {
         }
         $conn->query("DELETE FROM galeri WHERE id=$id");
         $_SESSION['message_galeri'] = "Foto galeri berhasil dihapus.";
+        header('Location: admin_dashboard.php?page=galeri');
+        exit;
+    }
+    
+    if ($action=='edit' && isset($_GET['id'])) {
+        $id = intval($_GET['id']);
+        $q = $conn->query("SELECT * FROM galeri WHERE id=$id");
+        if ($q && $row = $q->fetch_assoc()) {
+            $edit_galeri = $row;
+        }
+    }
+    
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_galeri'])) {
+        $id = $_POST['id'];
+        $judul = $_POST['judul_galeri'];
+        $deskripsi = $_POST['deskripsi_galeri'];
+        $gambar = $_POST['gambar_lama'];
+        
+        if (!empty($_FILES['gambar_galeri']['name'])) {
+            $target_dir = "uploads/";
+            $target_file = $target_dir . time() . "_" . basename($_FILES["gambar_galeri"]["name"]);
+            if (move_uploaded_file($_FILES["gambar_galeri"]["tmp_name"], $target_file)) {
+                $gambar = $target_file;
+            }
+        }
+        
+        $stmt = $conn->prepare("UPDATE galeri SET judul=?, deskripsi=?, gambar=? WHERE id=?");
+        $stmt->bind_param("sssi", $judul, $deskripsi, $gambar, $id);
+        if ($stmt->execute()) {
+            $_SESSION['message_galeri'] = "Foto galeri berhasil diupdate!";
+        } else {
+            $_SESSION['error_galeri'] = "Gagal update foto galeri.";
+        }
+        $stmt->close();
         header('Location: admin_dashboard.php?page=galeri');
         exit;
     }
@@ -245,12 +280,20 @@ if ($page == 'produk-umkm') {
         $nama_produk = $_POST['nama_produk'];
         $deskripsi = $_POST['deskripsi'];
         $harga = $_POST['harga'];
+        $nomor_wa = $_POST['nomor_wa'];
         $target_dir = "uploads/";
         $target_file = $target_dir . time() . "_" . basename($_FILES["gambar"]["name"]);
         
         if (move_uploaded_file($_FILES["gambar"]["tmp_name"], $target_file)) {
-            $stmt = $conn->prepare("INSERT INTO produk_umkm (nama_produk, deskripsi, harga, gambar) VALUES (?, ?, ?, ?)");
-            $stmt->bind_param("ssds", $nama_produk, $deskripsi, $harga, $target_file);
+            // Bersihkan harga dari karakter non-numerik kecuali titik dan koma
+            $harga = preg_replace('/[^0-9.,]/', '', $harga);
+            $harga = str_replace(',', '.', $harga);
+            
+            // Bersihkan nomor WhatsApp dari karakter non-numerik
+            $nomor_wa = preg_replace('/[^0-9]/', '', $nomor_wa);
+            
+            $stmt = $conn->prepare("INSERT INTO produk_umkm (nama_produk, deskripsi, harga, nomor_wa, gambar) VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssdss", $nama_produk, $deskripsi, $harga, $nomor_wa, $target_file);
             if ($stmt->execute()) {
                 $_SESSION['message_umkm'] = "Produk berhasil ditambahkan!";
             } else {
@@ -269,6 +312,7 @@ if ($page == 'produk-umkm') {
         $nama_produk = $_POST['nama_produk'];
         $deskripsi = $_POST['deskripsi'];
         $harga = $_POST['harga'];
+        $nomor_wa = $_POST['nomor_wa'];
         $gambar_path = $_POST['gambar_lama'];
 
         if (!empty($_FILES['gambar']['name'])) {
@@ -282,8 +326,15 @@ if ($page == 'produk-umkm') {
             }
         }
 
-        $stmt = $conn->prepare("UPDATE produk_umkm SET nama_produk=?, deskripsi=?, harga=?, gambar=? WHERE id=?");
-        $stmt->bind_param("ssdsi", $nama_produk, $deskripsi, $harga, $gambar_path, $id);
+        // Bersihkan harga dari karakter non-numerik kecuali titik dan koma
+        $harga = preg_replace('/[^0-9.,]/', '', $harga);
+        $harga = str_replace(',', '.', $harga);
+        
+        // Bersihkan nomor WhatsApp dari karakter non-numerik
+        $nomor_wa = preg_replace('/[^0-9]/', '', $nomor_wa);
+        
+        $stmt = $conn->prepare("UPDATE produk_umkm SET nama_produk=?, deskripsi=?, harga=?, nomor_wa=?, gambar=? WHERE id=?");
+        $stmt->bind_param("ssdssi", $nama_produk, $deskripsi, $harga, $nomor_wa, $gambar_path, $id);
         if ($stmt->execute()) {
             $_SESSION['message_umkm'] = "Produk berhasil diupdate!";
         } else {
@@ -291,6 +342,72 @@ if ($page == 'produk-umkm') {
         }
         $stmt->close();
         header('Location: admin_dashboard.php?page=produk-umkm');
+        exit;
+    }
+    
+    // CRUD untuk Objek Wisata
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['tambah_wisata'])) {
+        $nama_wisata = $_POST['nama_wisata'];
+        $deskripsi = $_POST['deskripsi'];
+        $urutan = $_POST['urutan'];
+        $target_dir = "uploads/";
+        $target_file = $target_dir . time() . "_" . basename($_FILES["gambar"]["name"]);
+        
+        if (move_uploaded_file($_FILES["gambar"]["tmp_name"], $target_file)) {
+            $stmt = $conn->prepare("INSERT INTO objek_wisata (nama_wisata, deskripsi, gambar, urutan) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("sssi", $nama_wisata, $deskripsi, $target_file, $urutan);
+            if ($stmt->execute()) {
+                $_SESSION['message_wisata'] = "Objek wisata berhasil ditambahkan!";
+            } else {
+                $_SESSION['error_wisata'] = "Gagal menambahkan objek wisata.";
+            }
+            $stmt->close();
+        } else {
+            $_SESSION['error_wisata'] = "Gagal mengupload gambar.";
+        }
+        header('Location: admin_dashboard.php?page=objek-wisata');
+        exit;
+    }
+    
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_wisata'])) {
+        $id = $_POST['id'];
+        $nama_wisata = $_POST['nama_wisata'];
+        $deskripsi = $_POST['deskripsi'];
+        $urutan = $_POST['urutan'];
+        $gambar_path = $_POST['gambar_lama'];
+
+        if (!empty($_FILES['gambar']['name'])) {
+            $target_dir = "uploads/";
+            $new_gambar_path = $target_dir . time() . "_" . basename($_FILES["gambar"]["name"]);
+            if (move_uploaded_file($_FILES["gambar"]["tmp_name"], $new_gambar_path)) {
+                if (!empty($gambar_path) && file_exists($gambar_path)) {
+                    unlink($gambar_path);
+                }
+                $gambar_path = $new_gambar_path;
+            }
+        }
+        
+        $stmt = $conn->prepare("UPDATE objek_wisata SET nama_wisata=?, deskripsi=?, gambar=?, urutan=? WHERE id=?");
+        $stmt->bind_param("sssii", $nama_wisata, $deskripsi, $gambar_path, $urutan, $id);
+        if ($stmt->execute()) {
+            $_SESSION['message_wisata'] = "Objek wisata berhasil diupdate!";
+        } else {
+            $_SESSION['error_wisata'] = "Gagal update objek wisata.";
+        }
+        $stmt->close();
+        header('Location: admin_dashboard.php?page=objek-wisata');
+        exit;
+    }
+    
+    if ($action=='hapus' && isset($_GET['id']) && $page == 'objek-wisata') {
+        $id = intval($_GET['id']);
+        $q = $conn->query("SELECT gambar FROM objek_wisata WHERE id=$id");
+        if ($q && $row = $q->fetch_assoc()) {
+            if (!empty($row['gambar']) && file_exists($row['gambar'])) unlink($row['gambar']);
+        }
+        $conn->query("DELETE FROM objek_wisata WHERE id=$id");
+        $_SESSION['message_wisata'] = "Objek wisata berhasil dihapus.";
+        header('Location: admin_dashboard.php?page=objek-wisata');
         exit;
     }
     
@@ -307,9 +424,111 @@ if ($page == 'produk-umkm') {
     }
 }
 
+// Pantai Sejarah Management
+if ($page == 'pantai-sejarah') {
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_section'])) {
+        $id = $_POST['id'];
+        $title = $_POST['title'];
+        $content = $_POST['content'];
+        $image = $_POST['image_lama'];
+        
+        if (!empty($_FILES['image']['name'])) {
+            $target_dir = "uploads/";
+            $target_file = $target_dir . time() . "_" . basename($_FILES["image"]["name"]);
+            if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
+                $image = $target_file;
+            }
+        }
+        
+        $stmt = $conn->prepare("UPDATE pantai_sejarah SET title=?, content=?, image=? WHERE id=?");
+        $stmt->bind_param("sssi", $title, $content, $image, $id);
+        if ($stmt->execute()) {
+            $_SESSION['message_pantai'] = "Section Pantai Sejarah berhasil diupdate!";
+        } else {
+            $_SESSION['error_pantai'] = "Gagal update section.";
+        }
+        $stmt->close();
+        header('Location: admin_dashboard.php?page=pantai-sejarah');
+        exit;
+    }
+}
+
+// Testimonial Pantai Sejarah Management
+if ($page == 'testimonial-pantai') {
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['tambah_testimonial'])) {
+        $nama = $_POST['nama'];
+        $profesi = $_POST['profesi'];
+        $testimoni = $_POST['testimoni'];
+        $rating = $_POST['rating'];
+        $avatar = '';
+        
+        if (!empty($_FILES['avatar']['name'])) {
+            $target_dir = "uploads/";
+            $target_file = $target_dir . time() . "_" . basename($_FILES["avatar"]["name"]);
+            if (move_uploaded_file($_FILES["avatar"]["tmp_name"], $target_file)) {
+                $avatar = $target_file;
+            }
+        }
+        
+        $stmt = $conn->prepare("INSERT INTO testimonial_pantai_sejarah (nama, profesi, testimoni, rating, avatar) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssis", $nama, $profesi, $testimoni, $rating, $avatar);
+        if ($stmt->execute()) {
+            $_SESSION['message_testimonial'] = "Testimonial berhasil ditambahkan!";
+        } else {
+            $_SESSION['error_testimonial'] = "Gagal menambahkan testimonial.";
+        }
+        $stmt->close();
+        header('Location: admin_dashboard.php?page=testimonial-pantai');
+        exit;
+    }
+    
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_testimonial'])) {
+        $id = $_POST['id'];
+        $nama = $_POST['nama'];
+        $profesi = $_POST['profesi'];
+        $testimoni = $_POST['testimoni'];
+        $rating = $_POST['rating'];
+        $avatar = $_POST['avatar_lama'];
+        
+        if (!empty($_FILES['avatar']['name'])) {
+            $target_dir = "uploads/";
+            $target_file = $target_dir . time() . "_" . basename($_FILES["avatar"]["name"]);
+            if (move_uploaded_file($_FILES["avatar"]["tmp_name"], $target_file)) {
+                $avatar = $target_file;
+            }
+        }
+        
+        $stmt = $conn->prepare("UPDATE testimonial_pantai_sejarah SET nama=?, profesi=?, testimoni=?, rating=?, avatar=? WHERE id=?");
+        $stmt->bind_param("sssisi", $nama, $profesi, $testimoni, $rating, $avatar, $id);
+        if ($stmt->execute()) {
+            $_SESSION['message_testimonial'] = "Testimonial berhasil diupdate!";
+        } else {
+            $_SESSION['error_testimonial'] = "Gagal update testimonial.";
+        }
+        $stmt->close();
+        header('Location: admin_dashboard.php?page=testimonial-pantai');
+        exit;
+    }
+    
+    if ($action=='hapus' && isset($_GET['id'])) {
+        $id = intval($_GET['id']);
+        $q = $conn->query("SELECT avatar FROM testimonial_pantai_sejarah WHERE id=$id");
+        if ($q && $row = $q->fetch_assoc()) {
+            if (!empty($row['avatar']) && file_exists($row['avatar'])) unlink($row['avatar']);
+        }
+        $conn->query("DELETE FROM testimonial_pantai_sejarah WHERE id=$id");
+        $_SESSION['message_testimonial'] = "Testimonial berhasil dihapus.";
+        header('Location: admin_dashboard.php?page=testimonial-pantai');
+        exit;
+    }
+}
+
 // Get edit data if needed
 $edit_berita = null;
 $edit_inovasi = null;
+$edit_produk = null;
+$edit_wisata = null;
+$edit_testimonial = null;
 if ($action == 'edit' && isset($_GET['id'])) {
     $edit_id = intval($_GET['id']);
     if ($page == 'berita') {
@@ -318,6 +537,15 @@ if ($action == 'edit' && isset($_GET['id'])) {
     } elseif ($page == 'inovasi') {
         $q = $conn->query("SELECT * FROM inovasi WHERE id=$edit_id");
         $edit_inovasi = $q ? $q->fetch_assoc() : null;
+    } elseif ($page == 'produk-umkm') {
+        $q = $conn->query("SELECT * FROM produk_umkm WHERE id=$edit_id");
+        $edit_produk = $q ? $q->fetch_assoc() : null;
+    } elseif ($page == 'objek-wisata') {
+        $q = $conn->query("SELECT * FROM objek_wisata WHERE id=$edit_id");
+        $edit_wisata = $q ? $q->fetch_assoc() : null;
+    } elseif ($page == 'testimonial-pantai') {
+        $q = $conn->query("SELECT * FROM testimonial_pantai_sejarah WHERE id=$edit_id");
+        $edit_testimonial = $q ? $q->fetch_assoc() : null;
     }
 }
 
@@ -854,6 +1082,9 @@ if ($action == 'edit' && isset($_GET['id'])) {
                 <a href="admin_dashboard.php?page=home" class="<?= $page=='home'?'active':'' ?>"><i class="fa-solid fa-gauge"></i> Dashboard</a>
                 <a href="admin_dashboard.php?page=berita" class="<?= $page=='berita'?'active':'' ?>"><i class="fa-solid fa-newspaper"></i> Berita</a>
                 <a href="admin_dashboard.php?page=galeri" class="<?= $page=='galeri'?'active':'' ?>"><i class="fa-solid fa-images"></i> Galeri</a>
+                <a href="admin_dashboard.php?page=objek-wisata" class="<?= $page=='objek-wisata'?'active':'' ?>"><i class="fa-solid fa-mountain"></i> Objek Wisata</a>
+                <a href="admin_dashboard.php?page=pantai-sejarah" class="<?= $page=='pantai-sejarah'?'active':'' ?>"><i class="fa-solid fa-umbrella-beach"></i> Pantai Sejarah</a>
+                <a href="admin_dashboard.php?page=testimonial-pantai" class="<?= $page=='testimonial-pantai'?'active':'' ?>"><i class="fa-solid fa-comments"></i> Testimonial</a>
                 <a href="admin_dashboard.php?page=produk-umkm" class="<?= $page=='produk-umkm'?'active':'' ?>"><i class="fa-solid fa-store"></i> Produk UMKM</a>
                 <div class="sidebar-dropdown">
                     <a href="#" class="dropdown-toggle <?= (in_array($page, ['inovasi-pendidikan', 'inovasi-pertanian', 'inovasi-teknologi'])) ? 'active' : '' ?>"><i class="fa-solid fa-lightbulb"></i> Inovasi <i class="fa-solid fa-chevron-down dropdown-icon"></i></a>
@@ -882,6 +1113,9 @@ if ($action == 'edit' && isset($_GET['id'])) {
                         else if ($page == 'preview-galeri') echo 'Manajemen Preview';
                         else if ($page == 'kontak') echo 'Pesan Masuk';
                         else if ($page == 'produk-umkm') echo 'Manajemen Produk UMKM';
+                        else if ($page == 'objek-wisata') echo 'Manajemen Objek Wisata';
+                        else if ($page == 'pantai-sejarah') echo 'Manajemen Pantai Sejarah';
+                        else if ($page == 'testimonial-pantai') echo 'Manajemen Testimonial';
                     ?>
                 </h1>
                 <div class="admin-profile">
@@ -990,10 +1224,10 @@ if ($action == 'edit' && isset($_GET['id'])) {
                                 <div class="berita-card-link">
                                     <img src="<?= !empty($row['gambar']) ? htmlspecialchars($row['gambar']) : 'asset/default-image.jpg' ?>" alt="Gambar Berita" class="berita-card-image">
                                     <div class="berita-card-content">
-                                        <h3 class="berita-card-title"><?= htmlspecialchars($row['judul']) ?></h3>
-                                        <p class="berita-card-excerpt"><?= htmlspecialchars(substr($row['draft'], 0, 100)) . (strlen($row['draft']) > 100 ? '...' : '') ?></p>
+                                        <h3 class="berita-card-title"><?= htmlspecialchars($row['judul'] ?? '') ?></h3>
+                                        <p class="berita-card-excerpt"><?= htmlspecialchars(substr($row['draft'] ?? '', 0, 100)) . (strlen($row['draft'] ?? '') > 100 ? '...' : '') ?></p>
                                         <div class="berita-card-meta">
-                                            <span><i class="fa-solid fa-user"></i> <?= htmlspecialchars($row['penulis']) ?></span>
+                                            <span><i class="fa-solid fa-user"></i> <?= htmlspecialchars($row['penulis'] ?? '') ?></span>
                                             <span><i class="fa-solid fa-calendar-days"></i> <?= date('d M Y', strtotime($row['tanggal_dibuat'])) ?></span>
                                         </div>
                                     </div>
@@ -1053,10 +1287,10 @@ if ($action == 'edit' && isset($_GET['id'])) {
                             
                             echo "<tr>";
                             echo "<td>".($no)."</td>";
-                            echo "<td>".htmlspecialchars($row['nama'])."</td>";
-                            echo "<td>".htmlspecialchars($row['email'])."</td>";
-                            echo "<td>".htmlspecialchars($row['subjek'])."</td>";
-                            echo "<td style='max-width:200px;'>".htmlspecialchars(substr($row['pesan'], 0, 50)).(strlen($row['pesan']) > 50 ? '...' : '')."</td>";
+                            echo "<td>".htmlspecialchars($row['nama'] ?? '')."</td>";
+                            echo "<td>".htmlspecialchars($row['email'] ?? '')."</td>";
+                            echo "<td>".htmlspecialchars($row['subjek'] ?? '')."</td>";
+                            echo "<td style='max-width:200px;'>".htmlspecialchars(substr($row['pesan'] ?? '', 0, 50)).(strlen($row['pesan'] ?? '') > 50 ? '...' : '')."</td>";
                             echo "<td>".date('d M Y H:i', strtotime($row['created_at']))."</td>";
                             echo "<td><span class='status-badge $status_class'>$status_text</span></td>";
                             echo "<td class='aksi'>";
@@ -1078,6 +1312,98 @@ if ($action == 'edit' && isset($_GET['id'])) {
                     </tbody>
                 </table>
                 </div>
+            </div>
+            <?php endif; ?>
+
+            <?php if ($page=='galeri'): ?>
+            <div class="card" id="galeri">
+                <?php
+                $message = isset($_SESSION['message_galeri']) ? $_SESSION['message_galeri'] : null;
+                $error = isset($_SESSION['error_galeri']) ? $_SESSION['error_galeri'] : null;
+                unset($_SESSION['message_galeri'], $_SESSION['error_galeri']);
+                ?>
+                <?php if ($error) echo "<div class='message error'>$error</div>"; ?>
+                <?php if ($message) echo "<div class='message success'>$message</div>"; ?>
+
+                <?php if ($action=='tambah' || ($action=='edit' && isset($edit_galeri))): ?>
+                    <div class="card-header">
+                        <h2><?= $action == 'tambah' ? 'Tambah Foto Galeri' : 'Edit Foto Galeri' ?></h2>
+                        <a href="admin_dashboard.php?page=galeri" class="btn-secondary">&larr; Kembali ke Daftar Galeri</a>
+                    </div>
+                    <form method="POST" action="" enctype="multipart/form-data" class="modern-form">
+                        <input type="hidden" name="id" value="<?= $edit_galeri['id'] ?? '' ?>">
+                        <input type="hidden" name="gambar_lama" value="<?= $edit_galeri['gambar'] ?? '' ?>">
+                        
+                        <div class="form-group">
+                            <label for="judul_galeri">Judul Foto</label>
+                            <input type="text" id="judul_galeri" name="judul_galeri" value="<?= htmlspecialchars($edit_galeri['judul'] ?? '') ?>" required placeholder="Masukkan judul foto...">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="deskripsi_galeri">Deskripsi (Opsional)</label>
+                            <textarea id="deskripsi_galeri" name="deskripsi_galeri" rows="3" placeholder="Masukkan deskripsi foto..."><?= htmlspecialchars($edit_galeri['deskripsi'] ?? '') ?></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="gambar_galeri">Gambar</label>
+                            <?php if ($action == 'edit' && !empty($edit_galeri['gambar'])) : ?>
+                                <div style="margin-bottom: 10px;">
+                                    <img src="<?= htmlspecialchars($edit_galeri['gambar']) ?>" alt="Gambar Galeri" style="width:200px;height:auto;border-radius:8px;">
+                                </div>
+                            <?php endif; ?>
+                            <input type="file" id="gambar_galeri" name="gambar_galeri" accept="image/*" <?= $action == 'tambah' ? 'required' : '' ?>>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" name="<?= $action == 'tambah' ? 'tambah_galeri' : 'update_galeri' ?>" class="btn-primary">
+                                <?= $action == 'tambah' ? 'Tambah Foto' : 'Update Foto' ?>
+                            </button>
+                        </div>
+                    </form>
+                <?php else: ?>
+                    <div class="card-header">
+                        <h2>Manajemen Galeri</h2>
+                        <a href="admin_dashboard.php?page=galeri&action=tambah" class="btn-primary">+ Tambah Foto</a>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Gambar</th>
+                                    <th>Judul</th>
+                                    <th>Deskripsi</th>
+                                    <th>Tanggal Dibuat</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?php
+                            $result = $conn->query("SELECT * FROM galeri ORDER BY created_at DESC");
+                            $no = 1;
+                            if ($result && $result->num_rows > 0) {
+                                while ($row = $result->fetch_assoc()) {
+                                    $gambar = !empty($row['gambar']) ? htmlspecialchars($row['gambar']) : 'asset/default-image.jpg';
+                                    echo "<tr>";
+                                    echo "<td>".($no++)."</td>";
+                                    echo "<td><img src='" . $gambar . "' alt='Gambar Galeri' style='width:80px;height:60px;object-fit:cover;border-radius:4px;'></td>";
+                                    echo "<td>".htmlspecialchars($row['judul'] ?? '')."</td>";
+                                    echo "<td>".htmlspecialchars(substr($row['deskripsi'] ?? '', 0, 100)).(strlen($row['deskripsi'] ?? '') > 100 ? '...' : '')."</td>";
+                                    echo "<td>".date('d/m/Y H:i', strtotime($row['created_at']))."</td>";
+                                    echo "<td class='aksi'>
+                                    <a href='admin_dashboard.php?page=galeri&action=edit&id={$row['id']}' class='btn-secondary'>Edit</a>
+                                    <a href='admin_dashboard.php?page=galeri&action=hapus&id={$row['id']}' class='btn-danger' onclick=\"return confirm('Yakin hapus foto ini?');\">Hapus</a>
+                                    </td>";
+                                    echo "</tr>";
+                                }
+                            } else {
+                                echo "<tr><td colspan='6' style='text-align:center;padding:24px;'>Belum ada foto galeri.</td></tr>";
+                            }
+                            ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
             </div>
             <?php endif; ?>
 
@@ -1112,7 +1438,10 @@ if ($action == 'edit' && isset($_GET['id'])) {
                         <label>Deskripsi:</label>
                         <textarea name="deskripsi" rows="5" required><?= htmlspecialchars($edit_produk['deskripsi'] ?? '') ?></textarea>
                         <label>Harga:</label>
-                        <input type="number" name="harga" step="0.01" value="<?= htmlspecialchars($edit_produk['harga'] ?? '') ?>" required>
+                        <input type="number" name="harga" step="0.01" min="0" max="9999999999999.99" value="<?= htmlspecialchars($edit_produk['harga'] ?? '') ?>" required>
+                        <label>Nomor WhatsApp:</label>
+                        <input type="tel" name="nomor_wa" placeholder="6281234567890" value="<?= htmlspecialchars($edit_produk['nomor_wa'] ?? '') ?>" required>
+                        <small style="color: #666; font-size: 0.85rem;">Masukkan nomor tanpa tanda + atau spasi (contoh: 6281234567890)</small>
                         <label>Gambar:</label>
                         <?php if ($action == 'edit' && !empty($edit_produk['gambar'])) : ?>
                             <img src="<?= htmlspecialchars($edit_produk['gambar']) ?>" alt="Gambar Produk" style="width:150px;height:auto;margin-bottom:10px;border-radius:8px;">
@@ -1134,6 +1463,7 @@ if ($action == 'edit' && isset($_GET['id'])) {
                                     <th>Nama Produk</th>
                                     <th>Deskripsi</th>
                                     <th>Harga</th>
+                                    <th>Nomor WA</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -1147,9 +1477,18 @@ if ($action == 'edit' && isset($_GET['id'])) {
                                     echo "<tr>";
                                     echo "<td>".($no++)."</td>";
                                     echo "<td><img src='" . $gambar . "' alt='Gambar Produk'></td>";
-                                    echo "<td>".htmlspecialchars($row['nama_produk'])."</td>";
-                                    echo "<td>".htmlspecialchars(substr($row['deskripsi'], 0, 100)).(strlen($row['deskripsi']) > 100 ? '...' : '')."</td>";
+                                    echo "<td>".htmlspecialchars($row['nama_produk'] ?? '')."</td>";
+                                    echo "<td>".htmlspecialchars(substr($row['deskripsi'] ?? '', 0, 100)).(strlen($row['deskripsi'] ?? '') > 100 ? '...' : '')."</td>";
                                     echo "<td>Rp " . number_format($row['harga'], 2, ',', '.') . "</td>";
+                                    echo "<td>";
+                                    if (!empty($row['nomor_wa'])) {
+                                        $wa_link = "https://wa.me/" . $row['nomor_wa'] . "?text=Halo, saya tertarik dengan produk " . urlencode($row['nama_produk']);
+                                        echo "<a href='" . $wa_link . "' target='_blank' class='btn-secondary' style='font-size: 0.8rem; padding: 4px 8px;'>Test WA</a>";
+                                        echo "<br><small style='color: #666;'>" . htmlspecialchars($row['nomor_wa']) . "</small>";
+                                    } else {
+                                        echo "<span style='color: #999; font-size: 0.8rem;'>Belum diatur</span>";
+                                    }
+                                    echo "</td>";
                                     echo "<td class='aksi'>
                                     <a href='admin_dashboard.php?page=produk-umkm&action=edit&id={$row['id']}' class='btn-secondary'>Edit</a>
                                     <a href='admin_dashboard.php?page=produk-umkm&action=hapus&id={$row['id']}' class='btn-danger' onclick=\"return confirm('Yakin hapus produk ini?');\">Hapus</a>
@@ -1157,9 +1496,279 @@ if ($action == 'edit' && isset($_GET['id'])) {
                                     echo "</tr>";
                                 }
                             } else {
-                                echo "<tr><td colspan='6' style='text-align:center;padding:24px;'>Belum ada produk UMKM.</td></tr>";
+                                echo "<tr><td colspan='7' style='text-align:center;padding:24px;'>Belum ada produk UMKM.</td></tr>";
                             }
                             ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+            </div>
+            <?php endif; ?>
+
+            <?php if ($page=='objek-wisata'): ?>
+            <div class="card" id="objek-wisata">
+                <?php
+                $message = isset($_SESSION['message_wisata']) ? $_SESSION['message_wisata'] : null;
+                $error = isset($_SESSION['error_wisata']) ? $_SESSION['error_wisata'] : null;
+                unset($_SESSION['message_wisata'], $_SESSION['error_wisata']);
+                ?>
+                <?php if ($error) echo "<div class='message error'>$error</div>"; ?>
+                <?php if ($message) echo "<div class='message success'>$message</div>"; ?>
+
+                <?php if ($action=='tambah' || ($action=='edit' && isset($edit_wisata))): ?>
+                    <div class="card-header">
+                        <h2><?= $action == 'tambah' ? 'Tambah Objek Wisata' : 'Edit Objek Wisata' ?></h2>
+                        <a href="admin_dashboard.php?page=objek-wisata" class="btn-secondary">&larr; Kembali ke Daftar Objek Wisata</a>
+                    </div>
+                    <form method="POST" action="" enctype="multipart/form-data" class="modern-form">
+                        <input type="hidden" name="id" value="<?= $edit_wisata['id'] ?? '' ?>">
+                        <input type="hidden" name="gambar_lama" value="<?= $edit_wisata['gambar'] ?? '' ?>">
+                        
+                        <div class="form-group">
+                            <label for="nama_wisata">Nama Objek Wisata</label>
+                            <input type="text" id="nama_wisata" name="nama_wisata" value="<?= htmlspecialchars($edit_wisata['nama_wisata'] ?? '') ?>" required placeholder="Masukkan nama objek wisata...">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="deskripsi">Deskripsi</label>
+                            <textarea id="deskripsi" name="deskripsi" rows="5" required placeholder="Masukkan deskripsi objek wisata..."><?= htmlspecialchars($edit_wisata['deskripsi'] ?? '') ?></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="urutan">Urutan Tampilan (1-4)</label>
+                            <input type="number" id="urutan" name="urutan" min="1" max="4" value="<?= htmlspecialchars($edit_wisata['urutan'] ?? '1') ?>" required>
+                            <small style="color: #666; font-size: 0.85rem;">Hanya 4 objek wisata yang akan ditampilkan di halaman utama</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="gambar">Gambar</label>
+                            <?php if ($action == 'edit' && !empty($edit_wisata['gambar'])) : ?>
+                                <img src="<?= htmlspecialchars($edit_wisata['gambar']) ?>" alt="Gambar Wisata" style="width:200px;height:auto;margin-bottom:10px;border-radius:8px;">
+                            <?php endif; ?>
+                            <input type="file" id="gambar" name="gambar" accept="image/*" <?= $action == 'tambah' ? 'required' : '' ?>>
+                        </div>
+                        
+                        <button type="submit" name="<?= $action == 'tambah' ? 'tambah_wisata' : 'update_wisata' ?>"><?= $action == 'tambah' ? 'Tambah Objek Wisata' : 'Update Objek Wisata' ?></button>
+                    </form>
+                <?php else: ?>
+                    <div class="card-header">
+                        <h2>Manajemen Objek Wisata</h2>
+                        <a href="admin_dashboard.php?page=objek-wisata&action=tambah" class="btn-primary">+ Tambah Objek Wisata</a>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Gambar</th>
+                                    <th>Nama Objek Wisata</th>
+                                    <th>Deskripsi</th>
+                                    <th>Urutan</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?php
+                            $result = $conn->query("SELECT * FROM objek_wisata ORDER BY urutan ASC, id DESC");
+                            $no = 1;
+                            if ($result && $result->num_rows > 0) {
+                                while ($row = $result->fetch_assoc()) {
+                                    $gambar = !empty($row['gambar']) ? htmlspecialchars($row['gambar']) : 'asset/default-image.jpg';
+                                    echo "<tr>";
+                                    echo "<td>".($no++)."</td>";
+                                    echo "<td><img src='" . $gambar . "' alt='Gambar Wisata' style='width:80px;height:60px;object-fit:cover;border-radius:4px;'></td>";
+                                    echo "<td>".htmlspecialchars($row['nama_wisata'] ?? '')."</td>";
+                                    echo "<td>".htmlspecialchars(substr($row['deskripsi'] ?? '', 0, 100)).(strlen($row['deskripsi'] ?? '') > 100 ? '...' : '')."</td>";
+                                    echo "<td>".htmlspecialchars($row['urutan'] ?? '')."</td>";
+                                    echo "<td class='aksi'>
+                                    <a href='admin_dashboard.php?page=objek-wisata&action=edit&id={$row['id']}' class='btn-secondary'>Edit</a>
+                                    <a href='admin_dashboard.php?page=objek-wisata&action=hapus&id={$row['id']}' class='btn-danger' onclick=\"return confirm('Yakin hapus objek wisata ini?');\">Hapus</a>
+                                    </td>";
+                                    echo "</tr>";
+                                }
+                            } else {
+                                echo "<tr><td colspan='6' style='text-align:center;padding:24px;'>Belum ada objek wisata.</td></tr>";
+                            }
+                            ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+            </div>
+            <?php endif; ?>
+
+            <?php if ($page=='pantai-sejarah'): ?>
+            <div class="card" id="pantai-sejarah">
+                <?php
+                $message = isset($_SESSION['message_pantai']) ? $_SESSION['message_pantai'] : null;
+                $error = isset($_SESSION['error_pantai']) ? $_SESSION['error_pantai'] : null;
+                unset($_SESSION['message_pantai'], $_SESSION['error_pantai']);
+                ?>
+                <?php if ($error) echo "<div class='message error'>$error</div>"; ?>
+                <?php if ($message) echo "<div class='message success'>$message</div>"; ?>
+
+                <div class="card-header">
+                    <h2>Manajemen Konten Pantai Sejarah</h2>
+                    <p>Kelola konten untuk halaman Pantai Sejarah</p>
+                </div>
+
+                <div class="section-list">
+                    <?php
+                    $sections = $conn->query("SELECT * FROM pantai_sejarah ORDER BY order_number ASC");
+                    while ($section = $sections->fetch_assoc()):
+                    ?>
+                    <div class="section-item" style="background: white; padding: 24px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <div class="section-header" style="display: flex; justify-content: between; align-items: center; margin-bottom: 16px;">
+                            <h3 style="margin: 0; color: var(--primary);"><?= htmlspecialchars($section['title']) ?></h3>
+                            <span style="background: #e5e7eb; color: #374151; padding: 4px 12px; border-radius: 20px; font-size: 0.875rem; font-weight: 500;">
+                                <?= ucfirst($section['section_name']) ?>
+                            </span>
+                        </div>
+                        
+                        <div class="section-content" style="margin-bottom: 16px;">
+                            <p style="color: #6b7280; margin: 0;"><?= htmlspecialchars(substr($section['content'], 0, 200)) ?>...</p>
+                        </div>
+                        
+                        <div class="section-actions">
+                            <button onclick="editSection(<?= $section['id'] ?>)" class="btn-primary" style="margin-right: 8px;">
+                                <i class="fa-solid fa-edit"></i> Edit
+                            </button>
+                        </div>
+                    </div>
+                    <?php endwhile; ?>
+                </div>
+
+                <!-- Modal Edit Section -->
+                <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 32px; border-radius: 12px; width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                            <h3 style="margin: 0;">Edit Section</h3>
+                            <button onclick="closeModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                        </div>
+                        
+                        <form id="editForm" method="POST" action="" enctype="multipart/form-data">
+                            <input type="hidden" name="id" id="editId">
+                            <input type="hidden" name="image_lama" id="editImageLama">
+                            
+                            <label for="editTitle">Judul</label>
+                            <input type="text" id="editTitle" name="title" required>
+                            
+                            <label for="editContent">Konten</label>
+                            <textarea id="editContent" name="content" rows="6" required></textarea>
+                            
+                            <label for="editImage">Gambar (Opsional)</label>
+                            <input type="file" id="editImage" name="image" accept="image/*">
+                            <div id="currentImage" style="margin-top: 8px;"></div>
+                            
+                            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                                <button type="submit" name="update_section" class="btn-primary">Update Section</button>
+                                <button type="button" onclick="closeModal()" class="btn-secondary">Batal</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <?php if ($page=='testimonial-pantai'): ?>
+            <div class="card" id="testimonial-pantai">
+                <?php
+                $message = isset($_SESSION['message_testimonial']) ? $_SESSION['message_testimonial'] : null;
+                $error = isset($_SESSION['error_testimonial']) ? $_SESSION['error_testimonial'] : null;
+                unset($_SESSION['message_testimonial'], $_SESSION['error_testimonial']);
+                ?>
+                <?php if ($error) echo "<div class='message error'>$error</div>"; ?>
+                <?php if ($message) echo "<div class='message success'>$message</div>"; ?>
+
+                <div class="card-header">
+                    <h2>Manajemen Testimonial Pantai Sejarah</h2>
+                    <a href="admin_dashboard.php?page=testimonial-pantai&action=tambah" class="btn-primary">
+                        <i class="fa-solid fa-plus"></i> Tambah Testimonial
+                    </a>
+                </div>
+
+                <?php if ($action=='tambah' || ($action=='edit' && isset($edit_testimonial))): ?>
+                    <div class="card-header">
+                        <h2><?= $action == 'tambah' ? 'Tambah Testimonial Baru' : 'Edit Testimonial' ?></h2>
+                        <a href="admin_dashboard.php?page=testimonial-pantai" class="btn-secondary">&larr; Kembali ke Daftar Testimonial</a>
+                    </div>
+                    <form method="POST" action="" enctype="multipart/form-data" class="modern-form">
+                        <?php if ($edit_testimonial): ?>
+                            <input type="hidden" name="id" value="<?= $edit_testimonial['id'] ?>">
+                            <input type="hidden" name="avatar_lama" value="<?= $edit_testimonial['avatar'] ?>">
+                        <?php endif; ?>
+                        
+                        <label for="nama">Nama</label>
+                        <input type="text" id="nama" name="nama" value="<?= $edit_testimonial ? htmlspecialchars($edit_testimonial['nama']) : '' ?>" required>
+                        
+                        <label for="profesi">Profesi</label>
+                        <input type="text" id="profesi" name="profesi" value="<?= $edit_testimonial ? htmlspecialchars($edit_testimonial['profesi']) : '' ?>" required>
+                        
+                        <label for="testimoni">Testimoni</label>
+                        <textarea id="testimoni" name="testimoni" rows="4" required><?= $edit_testimonial ? htmlspecialchars($edit_testimonial['testimoni']) : '' ?></textarea>
+                        
+                        <label for="rating">Rating (1-5)</label>
+                        <input type="number" id="rating" name="rating" min="1" max="5" value="<?= $edit_testimonial ? $edit_testimonial['rating'] : 5 ?>" required>
+                        
+                        <label for="avatar">Avatar (Opsional)</label>
+                        <input type="file" id="avatar" name="avatar" accept="image/*">
+                        <?php if ($edit_testimonial && $edit_testimonial['avatar']): ?>
+                            <div style="margin-top: 8px;">
+                                <img src="<?= htmlspecialchars($edit_testimonial['avatar']) ?>" alt="Current Avatar" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;">
+                            </div>
+                        <?php endif; ?>
+                        
+                        <button type="submit" name="<?= $edit_testimonial ? 'update_testimonial' : 'tambah_testimonial' ?>">
+                            <?= $edit_testimonial ? 'Update Testimonial' : 'Tambah Testimonial' ?>
+                        </button>
+                    </form>
+                <?php else: ?>
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Avatar</th>
+                                    <th>Nama</th>
+                                    <th>Profesi</th>
+                                    <th>Testimoni</th>
+                                    <th>Rating</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $testimonials = $conn->query("SELECT * FROM testimonial_pantai_sejarah ORDER BY created_at DESC");
+                                while ($testimonial = $testimonials->fetch_assoc()):
+                                ?>
+                                <tr>
+                                    <td>
+                                        <?php if ($testimonial['avatar']): ?>
+                                            <img src="<?= htmlspecialchars($testimonial['avatar']) ?>" alt="Avatar" style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">
+                                        <?php else: ?>
+                                            <div style="width: 50px; height: 50px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fa-solid fa-user" style="color: #9ca3af;"></i>
+                                            </div>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><?= htmlspecialchars($testimonial['nama']) ?></td>
+                                    <td><?= htmlspecialchars($testimonial['profesi']) ?></td>
+                                    <td><?= htmlspecialchars(substr($testimonial['testimoni'], 0, 100)) ?>...</td>
+                                    <td>
+                                        <?php for ($i = 1; $i <= 5; $i++): ?>
+                                            <i class="fa-solid fa-star" style="color: <?= $i <= $testimonial['rating'] ? '#f39c12' : '#e5e7eb' ?>;"></i>
+                                        <?php endfor; ?>
+                                    </td>
+                                    <td>
+                                        <a href="admin_dashboard.php?page=testimonial-pantai&action=edit&id=<?= $testimonial['id'] ?>" class="btn-primary" style="margin-right: 8px;">
+                                            <i class="fa-solid fa-edit"></i>
+                                        </a>
+                                        <a href="admin_dashboard.php?page=testimonial-pantai&action=hapus&id=<?= $testimonial['id'] ?>" class="btn-danger" onclick="return confirm('Yakin ingin menghapus testimonial ini?')">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <?php endwhile; ?>
                             </tbody>
                         </table>
                     </div>
@@ -1206,6 +1815,21 @@ if ($action == 'edit' && isset($_GET['id'])) {
             });
         });
 
+        // Validasi form produk UMKM
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                const hargaInput = this.querySelector('input[name="harga"]');
+                if (hargaInput) {
+                    const harga = parseFloat(hargaInput.value);
+                    if (isNaN(harga) || harga < 0 || harga > 9999999999999.99) {
+                        e.preventDefault();
+                        alert('Harga harus berupa angka positif dan tidak lebih dari 9999999999999.99');
+                        return false;
+                    }
+                }
+            });
+        });
+
         window.addEventListener('resize', function() {
             if (window.innerWidth > 900) {
                 closeSidebar();
@@ -1243,6 +1867,42 @@ if ($action == 'edit' && isset($_GET['id'])) {
             }
             reader.readAsDataURL(event.target.files[0]);
         };
+
+        // Functions for Pantai Sejarah management
+        function editSection(id) {
+            // Fetch section data via AJAX
+            fetch('get_section_data.php?id=' + id)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('editId').value = data.id;
+                    document.getElementById('editTitle').value = data.title;
+                    document.getElementById('editContent').value = data.content;
+                    document.getElementById('editImageLama').value = data.image;
+                    
+                    if (data.image) {
+                        document.getElementById('currentImage').innerHTML = '<img src="' + data.image + '" style="width: 200px; height: 150px; object-fit: cover; border-radius: 8px;">';
+                    } else {
+                        document.getElementById('currentImage').innerHTML = '';
+                    }
+                    
+                    document.getElementById('editModal').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Gagal mengambil data section');
+                });
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('editModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
     </script>
 </body>
 </html>

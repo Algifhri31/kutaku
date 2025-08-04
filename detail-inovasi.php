@@ -86,7 +86,7 @@ if ($id > 0) {
                 <img src="<?= htmlspecialchars($inovasi['gambar']) ?>" alt="Gambar Inovasi" class="detail-img" />
             <?php endif; ?>
             <div class="detail-content">
-                <?= nl2br(htmlspecialchars($inovasi['deskripsi'])) ?>
+                <?= nl2br(htmlspecialchars($inovasi['deskripsi'] ?? '')) ?>
             </div>
             <a href="index.php#team" class="back-link">&larr; Kembali ke Beranda</a>
         <?php else: ?>
