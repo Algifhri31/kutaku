@@ -14,7 +14,7 @@ if ($page == 'berita') {
         $penulis = $_POST['penulis'];
         $target_dir = "uploads/";
         $target_file = $target_dir . time() . "_" . basename($_FILES["gambar"]["name"]);
-        
+
         if (move_uploaded_file($_FILES["gambar"]["tmp_name"], $target_file)) {
             $stmt = $conn->prepare("INSERT INTO berita (judul, draft, penulis, gambar) VALUES (?, ?, ?, ?)");
             $stmt->bind_param("ssss", $judul, $draft, $penulis, $target_file);
@@ -30,20 +30,20 @@ if ($page == 'berita') {
         header('Location: admin_dashboard.php?page=berita');
         exit;
     }
-    
+
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_berita'])) {
         $id = $_POST['id'];
         $judul = $_POST['judul'];
         $draft = $_POST['draft'];
         $penulis = $_POST['penulis'];
         $gambar = $_POST['gambar_lama'];
-        
+
         if (!empty($_FILES['gambar']['name'])) {
             $target_dir = "uploads/";
             $target_file = $target_dir . time() . "_" . basename($_FILES["gambar"]["name"]);
             move_uploaded_file($_FILES["gambar"]["tmp_name"], $target_file);
         }
-        
+
         $stmt = $conn->prepare("UPDATE berita SET judul=?, draft=?, penulis=?, gambar=? WHERE id=?");
         $stmt->bind_param("ssssi", $judul, $draft, $penulis, $target_file, $id);
         if ($stmt->execute()) {
@@ -55,7 +55,7 @@ if ($page == 'berita') {
         header('Location: admin_dashboard.php?page=berita');
         exit;
     }
-    
+
     if ($action=='hapus' && isset($_GET['id'])) {
         $id = intval($_GET['id']);
         $q = $conn->query("SELECT gambar FROM berita WHERE id=$id");
@@ -76,7 +76,7 @@ if ($page == 'inovasi') {
         $penulis = $_POST['penulis_inovasi'];
         $target_dir = "uploads/";
         $target_file = $target_dir . time() . "_" . basename($_FILES["gambar_inovasi"]["name"]);
-        
+
         if (move_uploaded_file($_FILES["gambar_inovasi"]["tmp_name"], $target_file)) {
             $stmt = $conn->prepare("INSERT INTO inovasi (judul, deskripsi, penulis, gambar) VALUES (?, ?, ?, ?)");
             $stmt->bind_param("ssss", $judul, $deskripsi, $penulis, $target_file);
@@ -92,20 +92,20 @@ if ($page == 'inovasi') {
         header('Location: admin_dashboard.php?page=inovasi');
         exit;
     }
-    
+
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_inovasi'])) {
         $id = $_POST['id'];
         $judul = $_POST['judul_inovasi'];
         $deskripsi = $_POST['deskripsi_inovasi'];
         $penulis = $_POST['penulis_inovasi'];
         $gambar = $_POST['gambar_lama'];
-        
+
         if (!empty($_FILES['gambar_inovasi']['name'])) {
             $target_dir = "uploads/";
             $target_file = $target_dir . time() . "_" . basename($_FILES["gambar_inovasi"]["name"]);
             move_uploaded_file($_FILES["gambar_inovasi"]["tmp_name"], $target_file);
         }
-        
+
         $stmt = $conn->prepare("UPDATE inovasi SET judul=?, deskripsi=?, penulis=?, gambar=? WHERE id=?");
         $stmt->bind_param("ssssi", $judul, $deskripsi, $penulis, $target_file, $id);
         if ($stmt->execute()) {
@@ -117,7 +117,7 @@ if ($page == 'inovasi') {
         header('Location: admin_dashboard.php?page=inovasi');
         exit;
     }
-    
+
     if ($action=='hapus' && isset($_GET['id'])) {
         $id = intval($_GET['id']);
         $q = $conn->query("SELECT gambar FROM inovasi WHERE id=$id");
@@ -147,7 +147,7 @@ if ($page == 'galeri') {
         $deskripsi = $_POST['deskripsi_galeri'];
         $target_dir = "uploads/";
         $target_file = $target_dir . time() . "_" . basename($_FILES["gambar_galeri"]["name"]);
-        
+
         if (move_uploaded_file($_FILES["gambar_galeri"]["tmp_name"], $target_file)) {
             $stmt = $conn->prepare("INSERT INTO galeri (judul, deskripsi, gambar) VALUES (?, ?, ?)");
             $stmt->bind_param("sss", $judul, $deskripsi, $target_file);
@@ -163,7 +163,7 @@ if ($page == 'galeri') {
         header('Location: admin_dashboard.php?page=galeri');
         exit;
     }
-    
+
     if ($action=='hapus' && isset($_GET['id'])) {
         $id = intval($_GET['id']);
         $q = $conn->query("SELECT gambar FROM galeri WHERE id=$id");
@@ -175,7 +175,7 @@ if ($page == 'galeri') {
         header('Location: admin_dashboard.php?page=galeri');
         exit;
     }
-    
+
     if ($action=='edit' && isset($_GET['id'])) {
         $id = intval($_GET['id']);
         $q = $conn->query("SELECT * FROM galeri WHERE id=$id");
@@ -183,13 +183,13 @@ if ($page == 'galeri') {
             $edit_galeri = $row;
         }
     }
-    
+
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_galeri'])) {
         $id = $_POST['id'];
         $judul = $_POST['judul_galeri'];
         $deskripsi = $_POST['deskripsi_galeri'];
         $gambar = $_POST['gambar_lama'];
-        
+
         if (!empty($_FILES['gambar_galeri']['name'])) {
             $target_dir = "uploads/";
             $target_file = $target_dir . time() . "_" . basename($_FILES["gambar_galeri"]["name"]);
@@ -197,7 +197,7 @@ if ($page == 'galeri') {
                 $gambar = $target_file;
             }
         }
-        
+
         $stmt = $conn->prepare("UPDATE galeri SET judul=?, deskripsi=?, gambar=? WHERE id=?");
         $stmt->bind_param("sssi", $judul, $deskripsi, $gambar, $id);
         if ($stmt->execute()) {
@@ -218,7 +218,7 @@ if ($page == 'preview-galeri') {
         $urutan = $_POST['urutan_preview'];
         $target_dir = "uploads/";
         $target_file = $target_dir . time() . "_" . basename($_FILES["gambar_preview"]["name"]);
-        
+
         if (move_uploaded_file($_FILES["gambar_preview"]["tmp_name"], $target_file)) {
             $stmt = $conn->prepare("INSERT INTO preview_galeri (judul, deskripsi, gambar, urutan) VALUES (?, ?, ?, ?)");
             $stmt->bind_param("sssi", $judul, $deskripsi, $target_file, $urutan);
@@ -234,7 +234,7 @@ if ($page == 'preview-galeri') {
         header('Location: admin_dashboard.php?page=preview-galeri');
         exit;
     }
-    
+
     if ($action=='hapus' && isset($_GET['id'])) {
         $id = intval($_GET['id']);
         $q = $conn->query("SELECT gambar FROM preview_galeri WHERE id=$id");
@@ -265,7 +265,7 @@ if ($page == 'kontak') {
         header('Location: admin_dashboard.php?page=kontak');
         exit;
     }
-    
+
     if ($action=='hapus' && isset($_GET['id'])) {
         $id = intval($_GET['id']);
         $conn->query("DELETE FROM pesan_kontak WHERE id=$id");
@@ -283,15 +283,15 @@ if ($page == 'produk-umkm') {
         $nomor_wa = $_POST['nomor_wa'];
         $target_dir = "uploads/";
         $target_file = $target_dir . time() . "_" . basename($_FILES["gambar"]["name"]);
-        
+
         if (move_uploaded_file($_FILES["gambar"]["tmp_name"], $target_file)) {
             // Bersihkan harga dari karakter non-numerik kecuali titik dan koma
             $harga = preg_replace('/[^0-9.,]/', '', $harga);
             $harga = str_replace(',', '.', $harga);
-            
+
             // Bersihkan nomor WhatsApp dari karakter non-numerik
             $nomor_wa = preg_replace('/[^0-9]/', '', $nomor_wa);
-            
+
             $stmt = $conn->prepare("INSERT INTO produk_umkm (nama_produk, deskripsi, harga, nomor_wa, gambar) VALUES (?, ?, ?, ?, ?)");
             $stmt->bind_param("ssdss", $nama_produk, $deskripsi, $harga, $nomor_wa, $target_file);
             if ($stmt->execute()) {
@@ -306,7 +306,7 @@ if ($page == 'produk-umkm') {
         header('Location: admin_dashboard.php?page=produk-umkm');
         exit;
     }
-    
+
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_produk'])) {
         $id = $_POST['id'];
         $nama_produk = $_POST['nama_produk'];
@@ -329,10 +329,10 @@ if ($page == 'produk-umkm') {
         // Bersihkan harga dari karakter non-numerik kecuali titik dan koma
         $harga = preg_replace('/[^0-9.,]/', '', $harga);
         $harga = str_replace(',', '.', $harga);
-        
+
         // Bersihkan nomor WhatsApp dari karakter non-numerik
         $nomor_wa = preg_replace('/[^0-9]/', '', $nomor_wa);
-        
+
         $stmt = $conn->prepare("UPDATE produk_umkm SET nama_produk=?, deskripsi=?, harga=?, nomor_wa=?, gambar=? WHERE id=?");
         $stmt->bind_param("ssdssi", $nama_produk, $deskripsi, $harga, $nomor_wa, $gambar_path, $id);
         if ($stmt->execute()) {
@@ -344,12 +344,12 @@ if ($page == 'produk-umkm') {
         header('Location: admin_dashboard.php?page=produk-umkm');
         exit;
     }
-    
+
     // CRUD untuk Testimonial
     if ($page == 'testimonial-pantai') {
         if (isset($_POST['action'])) {
             $id = intval($_POST['id']);
-            
+
             if ($_POST['action'] == 'approve') {
                 $stmt = $conn->prepare("UPDATE testimonial_pantai_sejarah SET status = 'active' WHERE id = ?");
                 $stmt->bind_param("i", $id);
@@ -370,12 +370,12 @@ if ($page == 'produk-umkm') {
                 $result = $stmt->get_result();
                 $testimonial = $result->fetch_assoc();
                 $stmt->close();
-                
+
                 // Hapus file avatar jika ada
                 if ($testimonial['avatar'] && file_exists($testimonial['avatar'])) {
                     unlink($testimonial['avatar']);
                 }
-                
+
                 // Hapus dari database
                 $stmt = $conn->prepare("DELETE FROM testimonial_pantai_sejarah WHERE id = ?");
                 $stmt->bind_param("i", $id);
@@ -383,7 +383,7 @@ if ($page == 'produk-umkm') {
                 $stmt->close();
                 $_SESSION['message_testimonial'] = "Testimonial berhasil dihapus!";
             }
-            
+
             header('Location: admin_dashboard.php?page=testimonial-pantai');
             exit;
         }
@@ -396,7 +396,7 @@ if ($page == 'produk-umkm') {
         $urutan = $_POST['urutan'];
         $target_dir = "uploads/";
         $target_file = $target_dir . time() . "_" . basename($_FILES["gambar"]["name"]);
-        
+
         if (move_uploaded_file($_FILES["gambar"]["tmp_name"], $target_file)) {
             $stmt = $conn->prepare("INSERT INTO objek_wisata (nama_wisata, deskripsi, gambar, urutan) VALUES (?, ?, ?, ?)");
             $stmt->bind_param("sssi", $nama_wisata, $deskripsi, $target_file, $urutan);
@@ -412,7 +412,7 @@ if ($page == 'produk-umkm') {
         header('Location: admin_dashboard.php?page=objek-wisata');
         exit;
     }
-    
+
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_wisata'])) {
         $id = $_POST['id'];
         $nama_wisata = $_POST['nama_wisata'];
@@ -430,7 +430,7 @@ if ($page == 'produk-umkm') {
                 $gambar_path = $new_gambar_path;
             }
         }
-        
+
         $stmt = $conn->prepare("UPDATE objek_wisata SET nama_wisata=?, deskripsi=?, gambar=?, urutan=? WHERE id=?");
         $stmt->bind_param("sssii", $nama_wisata, $deskripsi, $gambar_path, $urutan, $id);
         if ($stmt->execute()) {
@@ -442,7 +442,7 @@ if ($page == 'produk-umkm') {
         header('Location: admin_dashboard.php?page=objek-wisata');
         exit;
     }
-    
+
     if ($action=='hapus' && isset($_GET['id']) && $page == 'objek-wisata') {
         $id = intval($_GET['id']);
         $q = $conn->query("SELECT gambar FROM objek_wisata WHERE id=$id");
@@ -454,7 +454,7 @@ if ($page == 'produk-umkm') {
         header('Location: admin_dashboard.php?page=objek-wisata');
         exit;
     }
-    
+
     if ($action=='hapus' && isset($_GET['id'])) {
         $id = intval($_GET['id']);
         $q = $conn->query("SELECT gambar FROM produk_umkm WHERE id=$id");
@@ -475,7 +475,7 @@ if ($page == 'pantai-sejarah') {
         $title = $_POST['title'];
         $content = $_POST['content'];
         $image = $_POST['image_lama'];
-        
+
         if (!empty($_FILES['image']['name'])) {
             $target_dir = "uploads/";
             $target_file = $target_dir . time() . "_" . basename($_FILES["image"]["name"]);
@@ -483,7 +483,7 @@ if ($page == 'pantai-sejarah') {
                 $image = $target_file;
             }
         }
-        
+
         $stmt = $conn->prepare("UPDATE pantai_sejarah SET title=?, content=?, image=? WHERE id=?");
         $stmt->bind_param("sssi", $title, $content, $image, $id);
         if ($stmt->execute()) {
@@ -505,7 +505,7 @@ if ($page == 'testimonial-pantai') {
         $testimoni = $_POST['testimoni'];
         $rating = $_POST['rating'];
         $avatar = '';
-        
+
         if (!empty($_FILES['avatar']['name'])) {
             $target_dir = "uploads/";
             $target_file = $target_dir . time() . "_" . basename($_FILES["avatar"]["name"]);
@@ -513,7 +513,7 @@ if ($page == 'testimonial-pantai') {
                 $avatar = $target_file;
             }
         }
-        
+
         $stmt = $conn->prepare("INSERT INTO testimonial_pantai_sejarah (nama, profesi, testimoni, rating, avatar) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("sssis", $nama, $profesi, $testimoni, $rating, $avatar);
         if ($stmt->execute()) {
@@ -525,7 +525,7 @@ if ($page == 'testimonial-pantai') {
         header('Location: admin_dashboard.php?page=testimonial-pantai');
         exit;
     }
-    
+
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_testimonial'])) {
         $id = $_POST['id'];
         $nama = $_POST['nama'];
@@ -533,7 +533,7 @@ if ($page == 'testimonial-pantai') {
         $testimoni = $_POST['testimoni'];
         $rating = $_POST['rating'];
         $avatar = $_POST['avatar_lama'];
-        
+
         if (!empty($_FILES['avatar']['name'])) {
             $target_dir = "uploads/";
             $target_file = $target_dir . time() . "_" . basename($_FILES["avatar"]["name"]);
@@ -541,7 +541,7 @@ if ($page == 'testimonial-pantai') {
                 $avatar = $target_file;
             }
         }
-        
+
         $stmt = $conn->prepare("UPDATE testimonial_pantai_sejarah SET nama=?, profesi=?, testimoni=?, rating=?, avatar=? WHERE id=?");
         $stmt->bind_param("sssisi", $nama, $profesi, $testimoni, $rating, $avatar, $id);
         if ($stmt->execute()) {
@@ -553,7 +553,7 @@ if ($page == 'testimonial-pantai') {
         header('Location: admin_dashboard.php?page=testimonial-pantai');
         exit;
     }
-    
+
     if ($action=='hapus' && isset($_GET['id'])) {
         $id = intval($_GET['id']);
         $q = $conn->query("SELECT avatar FROM testimonial_pantai_sejarah WHERE id=$id");
@@ -570,14 +570,14 @@ if ($page == 'testimonial-pantai') {
 // Inovasi Management (Pendidikan, Pertanian, Teknologi)
 if (in_array($page, ['inovasi-pendidikan', 'inovasi-pertanian', 'inovasi-teknologi'])) {
     $kategori = str_replace('inovasi-', '', $page);
-    
+
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['tambah_inovasi'])) {
         $judul = $_POST['judul_inovasi'];
         $deskripsi = $_POST['deskripsi_inovasi'];
         $tanggal = $_POST['tanggal_inovasi'];
         $target_dir = "uploads/";
         $target_file = $target_dir . time() . "_" . basename($_FILES["gambar_inovasi"]["name"]);
-        
+
         if (move_uploaded_file($_FILES["gambar_inovasi"]["tmp_name"], $target_file)) {
             $stmt = $conn->prepare("INSERT INTO inovasi (kategori, judul, deskripsi, gambar, tanggal) VALUES (?, ?, ?, ?, ?)");
             $stmt->bind_param("sssss", $kategori, $judul, $deskripsi, $target_file, $tanggal);
@@ -593,14 +593,14 @@ if (in_array($page, ['inovasi-pendidikan', 'inovasi-pertanian', 'inovasi-teknolo
         header("Location: admin_dashboard.php?page=$page");
         exit;
     }
-    
+
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_inovasi'])) {
         $id = $_POST['id'];
         $judul = $_POST['judul_inovasi'];
         $deskripsi = $_POST['deskripsi_inovasi'];
         $tanggal = $_POST['tanggal_inovasi'];
         $gambar = $_POST['gambar_lama'];
-        
+
         if (!empty($_FILES['gambar_inovasi']['name'])) {
             $target_dir = "uploads/";
             $target_file = $target_dir . time() . "_" . basename($_FILES["gambar_inovasi"]["name"]);
@@ -611,7 +611,7 @@ if (in_array($page, ['inovasi-pendidikan', 'inovasi-pertanian', 'inovasi-teknolo
                 $gambar = $target_file;
             }
         }
-        
+
         $stmt = $conn->prepare("UPDATE inovasi SET judul=?, deskripsi=?, gambar=?, tanggal=? WHERE id=?");
         $stmt->bind_param("ssssi", $judul, $deskripsi, $gambar, $tanggal, $id);
         if ($stmt->execute()) {
@@ -623,7 +623,7 @@ if (in_array($page, ['inovasi-pendidikan', 'inovasi-pertanian', 'inovasi-teknolo
         header("Location: admin_dashboard.php?page=$page");
         exit;
     }
-    
+
     if ($action=='hapus' && isset($_GET['id'])) {
         $id = intval($_GET['id']);
         $q = $conn->query("SELECT gambar FROM inovasi WHERE id=$id");
@@ -689,15 +689,15 @@ if ($action == 'edit' && isset($_GET['id'])) {
             --border-color: #e2e8f0;
             --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
         }
-        body { 
-            margin: 0; 
-            background: var(--background); 
+        body {
+            margin: 0;
+            background: var(--background);
             font-family: 'Inter', sans-serif;
             color: var(--primary);
         }
-        .admin-layout { 
-            display: flex; 
-            min-height: 100vh; 
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
         }
         .sidebar {
             width: 240px;
@@ -783,8 +783,8 @@ if ($action == 'edit' && isset($_GET['id'])) {
             padding-top: 16px;
             border-top: 1px solid var(--secondary);
         }
-        .main-content { 
-            flex: 1; 
+        .main-content {
+            flex: 1;
             padding: 24px 32px;
             overflow-y: auto;
         }
@@ -794,12 +794,12 @@ if ($action == 'edit' && isset($_GET['id'])) {
             justify-content: space-between;
             margin-bottom: 24px;
         }
-        .menu-toggle { 
-            display: none; 
-            background: none; 
-            border: none; 
-            font-size: 1.5rem; 
-            color: var(--primary); 
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary);
             cursor: pointer;
         }
         .topbar-title {
@@ -885,27 +885,27 @@ if ($action == 'edit' && isset($_GET['id'])) {
         .btn-danger:hover {
             background: #fecaca;
         }
-        label { 
-            font-weight: 500; 
+        label {
+            font-weight: 500;
             color: var(--primary);
             margin-bottom: 8px;
             display: block;
         }
         input[type="text"], textarea, input[type="file"], input[type="number"] {
-            width: 100%; 
-            padding: 12px; 
+            width: 100%;
+            padding: 12px;
             margin-bottom: 16px;
-            border: 1px solid var(--border-color); 
-            border-radius: 8px; 
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             background: var(--background);
-            font-size: 1rem; 
+            font-size: 1rem;
             transition: border-color 0.2s, box-shadow 0.2s;
             color: var(--primary);
             box-sizing: border-box;
         }
-        input[type="text"]:focus, textarea:focus, input[type="number"]:focus { 
-            border-color: var(--accent); 
-            outline: none; 
+        input[type="text"]:focus, textarea:focus, input[type="number"]:focus {
+            border-color: var(--accent);
+            outline: none;
             box-shadow: 0 0 0 3px var(--accent-light);
         }
         button[type="submit"] {
@@ -922,50 +922,58 @@ if ($action == 'edit' && isset($_GET['id'])) {
         button[type="submit"]:hover {
             background: #1d4ed8;
         }
-        .message { 
-            text-align: center; 
-            margin-bottom: 18px; 
-            padding: 12px; 
-            border-radius: 8px; 
+        .message {
+            text-align: center;
+            margin-bottom: 18px;
+            padding: 12px;
+            border-radius: 8px;
             font-weight: 500;
         }
-        .message.error { 
-            background: #fee2e2; 
-            color: #b91c1c; 
-            border: 1px solid #fecaca; 
+        .message.error {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
         }
-        .message.success { 
-            background: #dcfce7; 
-            color: #166534; 
-            border: 1px solid #bbf7d0; 
+        .message.success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
         }
         .admin-table {
-            width: 100%; 
+            width: 100%;
             border-collapse: collapse;
             font-size: 1rem;
         }
-        .admin-table th, .admin-table td { 
-            padding: 16px; 
-            border-bottom: 1px solid var(--border-color);
+        .admin-table th, .admin-table td {
+            padding: 16px;
             text-align: left;
             vertical-align: middle;
         }
+        .admin-table thead {
+            border-bottom: 2px solid var(--border-color);
+        }
+        .admin-table tbody tr {
+            border-bottom: 1px solid var(--border-color);
+        }
+        .admin-table tbody tr:last-child {
+            border-bottom: 0;
+        }
         .admin-table th {
             background: #f9fafb;
-            color: var(--text-secondary); 
-            font-weight: 600; 
+            color: var(--text-secondary);
+            font-weight: 600;
             font-size: 0.875rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
-        .admin-table tbody tr:hover { 
-            background: #f9fafb; 
+        .admin-table tbody tr:hover {
+            background: #f9fafb;
         }
-        .admin-table img { 
-            height: 48px; 
+        .admin-table img {
+            height: 48px;
             width: 72px;
             object-fit: cover;
-            border-radius: 6px; 
+            border-radius: 6px;
         }
         .admin-table .aksi {
             display: flex;
@@ -1019,32 +1027,129 @@ if ($action == 'edit' && isset($_GET['id'])) {
         .status-unread { background-color: #fee2e2; color: #991b1b; }
         .status-read { background-color: #dbeafe; color: #1e40af; }
         .status-replied { background-color: #dcfce7; color: #15803d; }
-        
+
         /* Testimonial Status Badges */
-        .status-pending { background: #fff3cd; color: #856404; }
-        .status-active { background: #d4edda; color: #155724; }
-        .status-rejected { background: #f8d7da; color: #721c24; }
-        
+        .status-pending { background-color: #fef3c7; color: #92400e; }
+        .status-active { background-color: #d1fae5; color: #065f46; }
+        .status-rejected { background-color: #fee2e2; color: #991b1b; }
+
         /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
         .filter-tab {
             padding: 8px 16px;
-            border: 2px solid #ddd;
+            border: 1px solid var(--border-color);
             border-radius: 20px;
             cursor: pointer;
-            background: white;
-            transition: all 0.3s ease;
+            background: var(--card-bg);
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
         }
         .filter-tab.active {
-            background: #007bff;
-            color: white;
-            border-color: #007bff;
+            background: var(--accent-light);
+            color: var(--accent);
+            border-color: var(--accent);
+            font-weight: 600;
         }
-        .filter-tab:hover {
-            background: #f8f9fa;
+        .filter-tab:hover:not(.active) {
+            background: var(--background);
+            color: var(--primary);
+            border-color: #cbd5e1;
         }
-        .filter-tab.active:hover {
-            background: #0056b3;
+
+        .testimonial-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
         }
+        .testimonial-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .testimonial-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .testimonial-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--accent-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        .testimonial-info h4 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+        .testimonial-info p {
+            margin: 4px 0 0 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        .testimonial-body {
+            padding: 16px 0;
+            flex-grow: 1;
+        }
+        .testimonial-content {
+            font-style: italic;
+            color: #374151;
+            line-height: 1.6;
+        }
+        .testimonial-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #f59e0b;
+            margin-top: 16px;
+        }
+        .testimonial-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+        .testimonial-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-approve, .btn-reject, .btn-delete {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+        .btn-approve { color: #10b981; }
+        .btn-approve:hover { background: #dcfce7; }
+        .btn-reject { color: #ef4444; }
+        .btn-reject:hover { background: #fee2e2; }
+        .btn-delete { color: #6b7280; }
+        .btn-delete:hover { background: #f1f5f9; }
 
         .berita-item {
             display: flex;
@@ -1179,6 +1284,82 @@ if ($action == 'edit' && isset($_GET['id'])) {
             color: var(--text-secondary);
         }
 
+        .form-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 32px;
+        }
+
+        @media (max-width: 1024px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .galeri-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 24px;
+        }
+        .galeri-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .galeri-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .galeri-card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+        .galeri-card-content {
+            padding: 16px;
+        }
+        .galeri-card-title {
+            font-weight: 600;
+            margin: 0 0 4px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .galeri-card-date {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .galeri-card-actions {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            gap: 8px;
+            background: rgba(0,0,0,0.4);
+            padding: 6px;
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .galeri-card:hover .galeri-card-actions {
+            opacity: 1;
+        }
+        .galeri-card-actions a {
+            color: white;
+            padding: 4px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .galeri-card-actions .btn-secondary { background: var(--accent); }
+        .galeri-card-actions .btn-danger { background: #dc2626; }
+
+
         @media (max-width: 900px) {
             .sidebar {
                 position: fixed;
@@ -1196,18 +1377,18 @@ if ($action == 'edit' && isset($_GET['id'])) {
             .topbar-title {
                 display: none;
             }
-            .sidebar-overlay { 
-                display: none; 
-                position: fixed; 
-                top: 0; 
-                left: 0; 
-                width: 100vw; 
-                height: 100vh; 
-                background: rgba(0,0,0,0.5); 
-                z-index: 1000; 
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0,0,0,0.5);
+                z-index: 1000;
             }
-            .sidebar.open ~ .sidebar-overlay { 
-                display: block; 
+            .sidebar.open ~ .sidebar-overlay {
+                display: block;
             }
         }
     </style>
@@ -1245,7 +1426,7 @@ if ($action == 'edit' && isset($_GET['id'])) {
             <div class="topbar">
                 <button class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
                 <h1 class="topbar-title">
-                    <?php 
+                    <?php
                         if ($page == 'home') echo 'Dashboard';
                         else if ($page == 'berita') echo 'Manajemen Berita';
                         else if ($page == 'inovasi') echo 'Manajemen Inovasi';
@@ -1322,12 +1503,12 @@ if ($action == 'edit' && isset($_GET['id'])) {
                     <form method="POST" action="" enctype="multipart/form-data" class="modern-form">
                         <input type="hidden" name="id" value="<?= $edit_berita['id'] ?? '' ?>">
                         <input type="hidden" name="gambar_lama" value="<?= $edit_berita['gambar'] ?? '' ?>">
-                        
+
                         <div class="form-group">
                             <label for="judul">Judul Berita</label>
                             <input type="text" id="judul" name="judul" value="<?= htmlspecialchars($edit_berita['judul'] ?? '') ?>" required placeholder="Masukkan judul berita...">
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="penulis">Nama Penulis</label>
                             <input type="text" id="penulis" name="penulis" value="<?= htmlspecialchars($edit_berita['penulis'] ?? '') ?>" required placeholder="Contoh: John Doe">
@@ -1396,7 +1577,7 @@ if ($action == 'edit' && isset($_GET['id'])) {
                 <?php endif; ?>
             </div>
             <?php endif; ?>
-            
+
             <?php if ($page=='kontak'): ?>
             <div class="card" id="kontak">
                 <?php
@@ -1406,11 +1587,11 @@ if ($action == 'edit' && isset($_GET['id'])) {
                 ?>
                 <?php if ($error_kontak) echo "<div class='message error'>$error_kontak</div>"; ?>
                 <?php if ($message_kontak) echo "<div class='message success'>$message_kontak</div>"; ?>
-                
+
                 <div class="card-header">
                     <h2>Daftar Pesan Kontak</h2>
                 </div>
-                
+
                 <div style="overflow-x:auto;">
                 <table class="admin-table">
                     <thead>
@@ -1433,7 +1614,7 @@ if ($action == 'edit' && isset($_GET['id'])) {
                         while ($row = $result->fetch_assoc()) {
                             $status_class = 'status-' . $row['status'];
                             $status_text = ucfirst($row['status']);
-                            
+
                             echo "<tr>";
                             echo "<td>".($no)."</td>";
                             echo "<td>".htmlspecialchars($row['nama'] ?? '')."</td>";
@@ -1482,30 +1663,36 @@ if ($action == 'edit' && isset($_GET['id'])) {
                     <form method="POST" action="" enctype="multipart/form-data" class="modern-form">
                         <input type="hidden" name="id" value="<?= $edit_galeri['id'] ?? '' ?>">
                         <input type="hidden" name="gambar_lama" value="<?= $edit_galeri['gambar'] ?? '' ?>">
-                        
+
                         <div class="form-group">
                             <label for="judul_galeri">Judul Foto</label>
                             <input type="text" id="judul_galeri" name="judul_galeri" value="<?= htmlspecialchars($edit_galeri['judul'] ?? '') ?>" required placeholder="Masukkan judul foto...">
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="deskripsi_galeri">Deskripsi (Opsional)</label>
-                            <textarea id="deskripsi_galeri" name="deskripsi_galeri" rows="3" placeholder="Masukkan deskripsi foto..."><?= htmlspecialchars($edit_galeri['deskripsi'] ?? '') ?></textarea>
+                            <textarea id="deskripsi_galeri" name="deskripsi_galeri" rows="5" placeholder="Masukkan deskripsi singkat..."><?= htmlspecialchars($edit_galeri['deskripsi'] ?? '') ?></textarea>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="gambar_galeri">Gambar</label>
-                            <?php if ($action == 'edit' && !empty($edit_galeri['gambar'])) : ?>
-                                <div style="margin-bottom: 10px;">
-                                    <img src="<?= htmlspecialchars($edit_galeri['gambar']) ?>" alt="Gambar Galeri" style="width:200px;height:auto;border-radius:8px;">
+                            <div class="image-upload-wrapper">
+                                <input type="file" id="gambar_galeri" name="gambar_galeri" accept="image/*" onchange="previewImage(event, 'imagePreviewGaleri')" <?= $action == 'tambah' ? 'required' : '' ?>>
+                                <div class="image-preview" id="imagePreviewGaleri">
+                                    <?php if ($action == 'edit' && !empty($edit_galeri['gambar'])) : ?>
+                                        <img src="<?= htmlspecialchars($edit_galeri['gambar']) ?>" alt="Preview Gambar">
+                                        <span class="image-preview-text">Ganti Gambar</span>
+                                    <?php else: ?>
+                                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                                        <span class="image-preview-text">Pilih atau seret gambar ke sini</span>
+                                    <?php endif; ?>
                                 </div>
-                            <?php endif; ?>
-                            <input type="file" id="gambar_galeri" name="gambar_galeri" accept="image/*" <?= $action == 'tambah' ? 'required' : '' ?>>
+                            </div>
                         </div>
-                        
+
                         <div class="form-actions">
                             <button type="submit" name="<?= $action == 'tambah' ? 'tambah_galeri' : 'update_galeri' ?>" class="btn-primary">
-                                <?= $action == 'tambah' ? 'Tambah Foto' : 'Update Foto' ?>
+                                <i class="fa-solid fa-save"></i> <?= $action == 'tambah' ? 'Tambah Foto' : 'Update Foto' ?>
                             </button>
                         </div>
                     </form>
@@ -1514,43 +1701,30 @@ if ($action == 'edit' && isset($_GET['id'])) {
                         <h2>Manajemen Galeri</h2>
                         <a href="admin_dashboard.php?page=galeri&action=tambah" class="btn-primary">+ Tambah Foto</a>
                     </div>
-                    <div style="overflow-x:auto;">
-                        <table class="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Gambar</th>
-                                    <th>Judul</th>
-                                    <th>Deskripsi</th>
-                                    <th>Tanggal Dibuat</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            <?php
-                            $result = $conn->query("SELECT * FROM galeri ORDER BY created_at DESC");
-                            $no = 1;
-                            if ($result && $result->num_rows > 0) {
-                                while ($row = $result->fetch_assoc()) {
-                                    $gambar = !empty($row['gambar']) ? htmlspecialchars($row['gambar']) : 'asset/default-image.jpg';
-                                    echo "<tr>";
-                                    echo "<td>".($no++)."</td>";
-                                    echo "<td><img src='" . $gambar . "' alt='Gambar Galeri' style='width:80px;height:60px;object-fit:cover;border-radius:4px;'></td>";
-                                    echo "<td>".htmlspecialchars($row['judul'] ?? '')."</td>";
-                                    echo "<td>".htmlspecialchars(substr($row['deskripsi'] ?? '', 0, 100)).(strlen($row['deskripsi'] ?? '') > 100 ? '...' : '')."</td>";
-                                    echo "<td>".date('d/m/Y H:i', strtotime($row['created_at']))."</td>";
-                                    echo "<td class='aksi'>
-                                    <a href='admin_dashboard.php?page=galeri&action=edit&id={$row['id']}' class='btn-secondary'>Edit</a>
-                                    <a href='admin_dashboard.php?page=galeri&action=hapus&id={$row['id']}' class='btn-danger' onclick=\"return confirm('Yakin hapus foto ini?');\">Hapus</a>
-                                    </td>";
-                                    echo "</tr>";
-                                }
-                            } else {
-                                echo "<tr><td colspan='6' style='text-align:center;padding:24px;'>Belum ada foto galeri.</td></tr>";
+                    <div class="galeri-grid">
+                        <?php
+                        $result = $conn->query("SELECT * FROM galeri ORDER BY created_at DESC");
+                        if ($result && $result->num_rows > 0) {
+                            while ($row = $result->fetch_assoc()) {
+                                $gambar = !empty($row['gambar']) ? htmlspecialchars($row['gambar']) : 'asset/default-image.jpg';
+                        ?>
+                            <div class="galeri-card">
+                                <img src="<?= $gambar ?>" alt="<?= htmlspecialchars($row['judul']) ?>" class="galeri-card-img">
+                                <div class="galeri-card-content">
+                                    <h4 class="galeri-card-title" title="<?= htmlspecialchars($row['judul']) ?>"><?= htmlspecialchars($row['judul']) ?></h4>
+                                    <p class="galeri-card-date"><?= date('d M Y', strtotime($row['created_at'])) ?></p>
+                                </div>
+                                <div class="galeri-card-actions">
+                                    <a href="admin_dashboard.php?page=galeri&action=edit&id=<?= $row['id'] ?>" class="btn-secondary" title="Edit"><i class="fa-solid fa-pencil"></i></a>
+                                    <a href="admin_dashboard.php?page=galeri&action=hapus&id=<?= $row['id'] ?>" class="btn-danger" title="Hapus" onclick="return confirm('Yakin hapus foto ini?');"><i class="fa-solid fa-trash"></i></a>
+                                </div>
+                            </div>
+                        <?php
                             }
-                            ?>
-                            </tbody>
-                        </table>
+                        } else {
+                            echo "<div class='empty-state' style='grid-column: 1 / -1;'><i class='fa-solid fa-images'></i><p>Belum ada foto di galeri.</p></div>";
+                        }
+                        ?>
                     </div>
                 <?php endif; ?>
             </div>
@@ -1673,32 +1847,44 @@ if ($action == 'edit' && isset($_GET['id'])) {
                     <form method="POST" action="" enctype="multipart/form-data" class="modern-form">
                         <input type="hidden" name="id" value="<?= $edit_wisata['id'] ?? '' ?>">
                         <input type="hidden" name="gambar_lama" value="<?= $edit_wisata['gambar'] ?? '' ?>">
-                        
+
                         <div class="form-group">
                             <label for="nama_wisata">Nama Objek Wisata</label>
                             <input type="text" id="nama_wisata" name="nama_wisata" value="<?= htmlspecialchars($edit_wisata['nama_wisata'] ?? '') ?>" required placeholder="Masukkan nama objek wisata...">
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="deskripsi">Deskripsi</label>
                             <textarea id="deskripsi" name="deskripsi" rows="5" required placeholder="Masukkan deskripsi objek wisata..."><?= htmlspecialchars($edit_wisata['deskripsi'] ?? '') ?></textarea>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="urutan">Urutan Tampilan (1-4)</label>
                             <input type="number" id="urutan" name="urutan" min="1" max="4" value="<?= htmlspecialchars($edit_wisata['urutan'] ?? '1') ?>" required>
-                            <small style="color: #666; font-size: 0.85rem;">Hanya 4 objek wisata yang akan ditampilkan di halaman utama</small>
+                            <small style="display: block; margin-top: 8px; color: #666; font-size: 0.85rem;">Hanya 4 objek wisata yang akan ditampilkan di halaman utama.</small>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="gambar">Gambar</label>
-                            <?php if ($action == 'edit' && !empty($edit_wisata['gambar'])) : ?>
-                                <img src="<?= htmlspecialchars($edit_wisata['gambar']) ?>" alt="Gambar Wisata" style="width:200px;height:auto;margin-bottom:10px;border-radius:8px;">
-                            <?php endif; ?>
-                            <input type="file" id="gambar" name="gambar" accept="image/*" <?= $action == 'tambah' ? 'required' : '' ?>>
+                            <div class="image-upload-wrapper">
+                                <input type="file" id="gambar" name="gambar" accept="image/*" onchange="previewImage(event, 'imagePreviewWisata')" <?= $action == 'tambah' ? 'required' : '' ?>>
+                                <div class="image-preview" id="imagePreviewWisata">
+                                    <?php if ($action == 'edit' && !empty($edit_wisata['gambar'])) : ?>
+                                        <img src="<?= htmlspecialchars($edit_wisata['gambar']) ?>" alt="Preview Gambar">
+                                        <span class="image-preview-text">Ganti Gambar</span>
+                                    <?php else: ?>
+                                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                                        <span class="image-preview-text">Pilih atau seret gambar ke sini</span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
                         </div>
-                        
-                        <button type="submit" name="<?= $action == 'tambah' ? 'tambah_wisata' : 'update_wisata' ?>"><?= $action == 'tambah' ? 'Tambah Objek Wisata' : 'Update Objek Wisata' ?></button>
+
+                        <div class="form-actions">
+                            <button type="submit" name="<?= $action == 'tambah' ? 'tambah_wisata' : 'update_wisata' ?>" class="btn-primary">
+                                <i class="fa-solid fa-save"></i> <?= $action == 'tambah' ? 'Tambah Objek Wisata' : 'Update Objek Wisata' ?>
+                            </button>
+                        </div>
                     </form>
                 <?php else: ?>
                     <div class="card-header">
@@ -1724,20 +1910,28 @@ if ($action == 'edit' && isset($_GET['id'])) {
                             if ($result && $result->num_rows > 0) {
                                 while ($row = $result->fetch_assoc()) {
                                     $gambar = !empty($row['gambar']) ? htmlspecialchars($row['gambar']) : 'asset/default-image.jpg';
-                                    echo "<tr>";
-                                    echo "<td>".($no++)."</td>";
-                                    echo "<td><img src='" . $gambar . "' alt='Gambar Wisata' style='width:80px;height:60px;object-fit:cover;border-radius:4px;'></td>";
-                                    echo "<td>".htmlspecialchars($row['nama_wisata'] ?? '')."</td>";
-                                    echo "<td>".htmlspecialchars(substr($row['deskripsi'] ?? '', 0, 100)).(strlen($row['deskripsi'] ?? '') > 100 ? '...' : '')."</td>";
-                                    echo "<td>".htmlspecialchars($row['urutan'] ?? '')."</td>";
-                                    echo "<td class='aksi'>
-                                    <a href='admin_dashboard.php?page=objek-wisata&action=edit&id={$row['id']}' class='btn-secondary'>Edit</a>
-                                    <a href='admin_dashboard.php?page=objek-wisata&action=hapus&id={$row['id']}' class='btn-danger' onclick=\"return confirm('Yakin hapus objek wisata ini?');\">Hapus</a>
-                                    </td>";
-                                    echo "</tr>";
+                            ?>
+                                <tr>
+                                    <td><?= $no++ ?></td>
+                                    <td><img src="<?= $gambar ?>" alt="Gambar Wisata" class="berita-thumb"></td>
+                                    <td>
+                                        <div class="berita-judul"><?= htmlspecialchars($row['nama_wisata'] ?? '') ?></div>
+                                    </td>
+                                    <td>
+                                        <p class="berita-draft" style="white-space: normal;"><?= htmlspecialchars(substr($row['deskripsi'] ?? '', 0, 120)) . (strlen($row['deskripsi'] ?? '') > 120 ? '...' : '') ?></p>
+                                    </td>
+                                    <td style="text-align: center;"><?= htmlspecialchars($row['urutan'] ?? '') ?></td>
+                                    <td>
+                                        <div class="aksi">
+                                            <a href="admin_dashboard.php?page=objek-wisata&action=edit&id=<?= $row['id'] ?>" class="btn-secondary" title="Edit"><i class="fa-solid fa-pencil"></i></a>
+                                            <a href="admin_dashboard.php?page=objek-wisata&action=hapus&id=<?= $row['id'] ?>" class="btn-danger" title="Hapus" onclick="return confirm('Yakin hapus objek wisata ini?');"><i class="fa-solid fa-trash"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php
                                 }
                             } else {
-                                echo "<tr><td colspan='6' style='text-align:center;padding:24px;'>Belum ada objek wisata.</td></tr>";
+                                echo "<tr><td colspan='6'><div class='empty-state'><i class='fa-solid fa-mountain'></i><p>Belum ada objek wisata yang ditambahkan.</p></div></td></tr>";
                             }
                             ?>
                             </tbody>
@@ -1774,11 +1968,11 @@ if ($action == 'edit' && isset($_GET['id'])) {
                                 <?= ucfirst($section['section_name']) ?>
                             </span>
                         </div>
-                        
+
                         <div class="section-content" style="margin-bottom: 16px;">
                             <p style="color: #6b7280; margin: 0;"><?= htmlspecialchars(substr($section['content'], 0, 200)) ?>...</p>
                         </div>
-                        
+
                         <div class="section-actions">
                             <button onclick="editSection(<?= $section['id'] ?>)" class="btn-primary" style="margin-right: 8px;">
                                 <i class="fa-solid fa-edit"></i> Edit
@@ -1795,21 +1989,21 @@ if ($action == 'edit' && isset($_GET['id'])) {
                             <h3 style="margin: 0;">Edit Section</h3>
                             <button onclick="closeModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
                         </div>
-                        
+
                         <form id="editForm" method="POST" action="" enctype="multipart/form-data">
                             <input type="hidden" name="id" id="editId">
                             <input type="hidden" name="image_lama" id="editImageLama">
-                            
+
                             <label for="editTitle">Judul</label>
                             <input type="text" id="editTitle" name="title" required>
-                            
+
                             <label for="editContent">Konten</label>
                             <textarea id="editContent" name="content" rows="6" required></textarea>
-                            
+
                             <label for="editImage">Gambar (Opsional)</label>
                             <input type="file" id="editImage" name="image" accept="image/*">
                             <div id="currentImage" style="margin-top: 8px;"></div>
-                            
+
                             <div style="display: flex; gap: 12px; margin-top: 24px;">
                                 <button type="submit" name="update_section" class="btn-primary">Update Section</button>
                                 <button type="button" onclick="closeModal()" class="btn-secondary">Batal</button>
@@ -1848,7 +2042,7 @@ if ($action == 'edit' && isset($_GET['id'])) {
                     if ($testimonials->num_rows > 0):
                     ?>
                         <?php while ($testimonial = $testimonials->fetch_assoc()): ?>
-                            <div class="testimonial-card <?= $testimonial['status'] ?>" data-status="<?= $testimonial['status'] ?>" style="background: white; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-left: 4px solid #ddd;">
+                            <div class="testimonial-card <?= $testimonial['status'] ?>" data-status="<?= $testimonial['status'] ?>" style="background: white; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
                                 <?php if ($testimonial['status'] == 'pending'): ?>
                                     <div style="border-left-color: #ffc107;"></div>
                                 <?php elseif ($testimonial['status'] == 'active'): ?>
@@ -1856,7 +2050,7 @@ if ($action == 'edit' && isset($_GET['id'])) {
                                 <?php elseif ($testimonial['status'] == 'rejected'): ?>
                                     <div style="border-left-color: #dc3545;"></div>
                                 <?php endif; ?>
-                                
+
                                 <div class="testimonial-header" style="display: flex; align-items: center; margin-bottom: 15px;">
                                     <?php if ($testimonial['avatar']): ?>
                                         <!-- Hapus tampilan avatar -->
@@ -1868,7 +2062,7 @@ if ($action == 'edit' && isset($_GET['id'])) {
                                     <div class="testimonial-info">
                                         <h4 style="margin: 0; color: #333;"><?= htmlspecialchars($testimonial['nama']) ?></h4>
                                         <p style="margin: 5px 0 0 0; color: #666; font-size: 0.9rem;"><?= htmlspecialchars($testimonial['profesi']) ?></p>
-                                        <span class="status-badge status-<?= $testimonial['status'] ?>" style="padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; margin-left: 10px;">
+                                        <span class="status-badge status-<?= $testimonial['status'] ?>" style="padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 600;">
                                             <?php
                                             switch($testimonial['status']) {
                                                 case 'pending': echo 'Pending'; break;
@@ -1880,22 +2074,22 @@ if ($action == 'edit' && isset($_GET['id'])) {
                                         </span>
                                     </div>
                                 </div>
-                                
+
                                 <div class="testimonial-content" style="margin-bottom: 15px; line-height: 1.6; color: #555;">
                                     "<?= htmlspecialchars($testimonial['testimoni']) ?>"
                                 </div>
-                                
+
                                 <div class="testimonial-rating" style="margin-bottom: 15px;">
                                     <?php for ($i = 1; $i <= 5; $i++): ?>
                                         <i class="fa<?= $i <= $testimonial['rating'] ? 's' : 'r' ?> fa-star" style="color: #ffc107;"></i>
                                     <?php endfor; ?>
                                     <span style="margin-left: 10px; color: #666;">(<?= $testimonial['rating'] ?>/5)</span>
                                 </div>
-                                
+
                                 <div style="color: #666; font-size: 0.9rem; margin-bottom: 15px;">
                                     <i class="fas fa-clock"></i> <?= date('d/m/Y H:i', strtotime($testimonial['created_at'])) ?>
                                 </div>
-                                
+
                                 <div class="testimonial-actions" style="display: flex; gap: 10px; flex-wrap: wrap;">
                                     <?php if ($testimonial['status'] == 'pending'): ?>
                                         <form method="POST" style="display: inline;">
@@ -1961,16 +2155,16 @@ if ($action == 'edit' && isset($_GET['id'])) {
                             <input type="hidden" name="id" value="<?= $edit_inovasi['id'] ?>">
                             <input type="hidden" name="gambar_lama" value="<?= $edit_inovasi['gambar'] ?>">
                         <?php endif; ?>
-                        
+
                         <label for="judul_inovasi">Judul Inovasi</label>
                         <input type="text" id="judul_inovasi" name="judul_inovasi" value="<?= $edit_inovasi ? htmlspecialchars($edit_inovasi['judul']) : '' ?>" required>
-                        
+
                         <label for="deskripsi_inovasi">Deskripsi</label>
                         <textarea id="deskripsi_inovasi" name="deskripsi_inovasi" rows="6" required><?= $edit_inovasi ? htmlspecialchars($edit_inovasi['deskripsi']) : '' ?></textarea>
-                        
+
                         <label for="tanggal_inovasi">Tanggal</label>
                         <input type="date" id="tanggal_inovasi" name="tanggal_inovasi" value="<?= $edit_inovasi ? $edit_inovasi['tanggal'] : date('Y-m-d') ?>" required>
-                        
+
                         <label for="gambar_inovasi">Gambar</label>
                         <input type="file" id="gambar_inovasi" name="gambar_inovasi" accept="image/*" <?= $edit_inovasi ? '' : 'required' ?>>
                         <?php if ($edit_inovasi && $edit_inovasi['gambar']): ?>
@@ -1978,7 +2172,7 @@ if ($action == 'edit' && isset($_GET['id'])) {
                                 <img src="<?= htmlspecialchars($edit_inovasi['gambar']) ?>" alt="Current Image" style="width: 200px; height: 150px; object-fit: cover; border-radius: 8px;">
                             </div>
                         <?php endif; ?>
-                        
+
                         <button type="submit" name="<?= $edit_inovasi ? 'update_inovasi' : 'tambah_inovasi' ?>">
                             <?= $edit_inovasi ? 'Update Inovasi' : 'Tambah Inovasi' ?>
                         </button>
@@ -2037,7 +2231,7 @@ if ($action == 'edit' && isset($_GET['id'])) {
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
         const menuToggle = document.getElementById('menuToggle');
-        
+
         function openSidebar() {
             sidebar.classList.add('open');
             sidebarOverlay.style.display = 'block';
@@ -2132,10 +2326,10 @@ if ($action == 'edit' && isset($_GET['id'])) {
                         filterTabs.forEach(t => t.classList.remove('active'));
                         // Add active class to clicked tab
                         this.classList.add('active');
-                        
+
                         const filter = this.dataset.filter;
                         const testimonials = document.querySelectorAll('.testimonial-card');
-                        
+
                         testimonials.forEach(testimonial => {
                             if (filter === 'all' || testimonial.dataset.status === filter) {
                                 testimonial.style.display = 'block';
@@ -2158,13 +2352,13 @@ if ($action == 'edit' && isset($_GET['id'])) {
                     document.getElementById('editTitle').value = data.title;
                     document.getElementById('editContent').value = data.content;
                     document.getElementById('editImageLama').value = data.image;
-                    
+
                     if (data.image) {
                         document.getElementById('currentImage').innerHTML = '<img src="' + data.image + '" style="width: 200px; height: 150px; object-fit: cover; border-radius: 8px;">';
                     } else {
                         document.getElementById('currentImage').innerHTML = '';
                     }
-                    
+
                     document.getElementById('editModal').style.display = 'block';
                 })
                 .catch(error => {
