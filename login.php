@@ -4,11 +4,13 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
     header('Location: admin_dashboard.php');
     exit;
 }
-$conn = new mysqli("localhost", "root", "", "website");
+include 'koneksi.php';
 
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
-}
+// $conn is now available from koneksi.php
+// No need for the following block as koneksi.php handles connection error
+// if ($conn->connect_error) {
+//     die("Koneksi gagal: " . $conn->connect_error);
+// }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $conn->real_escape_string($_POST['username']);
