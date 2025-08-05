@@ -27,13 +27,7 @@
             </a>
             <ul id="nav-list">
                 <li><a href="#home">Beranda</a></li>
-                <li class="dropdown">
-                    <a href="#aboutus">Tentang <i class="fa fa-caret-down"></i></a>
-                    <ul class="dropdown-content" style="list-style-type: none;">
-                        <li><a href="sejarah.php">Sejarah</a></li>
-                        <li><a href="#team">Pengembangan Inovasi</a></li>
-                    </ul>
-                </li>
+                <li><a href="#team">Inovasi</a></li>
                 <li class="dropdown">
                     <a href="#support">Wisata <i class="fa fa-caret-down"></i></a>
                     <ul class="dropdown-content" style="list-style-type: none;">
@@ -65,19 +59,19 @@
             <!-- GALLERY PREVIEW SECTION -->
             <section class="section" id="gallery">
                 <div class="container">
-                    <h2 class="section-title">Objek Wisata</h2>
+                    <h2 class="section-title">Galeri</h2>
                     <p class="section-desc">Jelajahi keindahan alam dan destinasi wisata yang memukau</p>
                     <div class="gallery-preview">
                         <div class="preview-grid">
                             <?php
                             include 'koneksi.php';
                             // Ambil data dari tabel objek_wisata (maksimal 4)
-                            $result = mysqli_query($conn, "SELECT * FROM objek_wisata WHERE status = 'aktif' ORDER BY urutan ASC LIMIT 4");
+                            $result = mysqli_query($conn, "SELECT * FROM galeri WHERE judul IS NOT NULL AND judul != '' ORDER BY created_at DESC LIMIT 6");
                             if ($result && mysqli_num_rows($result) > 0) {
                                 while ($row = mysqli_fetch_assoc($result)) {
-                                    $gambar = !empty($row['gambar']) ? htmlspecialchars($row['gambar']) : 'asset/default-image.jpg';
-                                    $judul = htmlspecialchars($row['nama_wisata']);
-                                    $deskripsi = htmlspecialchars($row['deskripsi'] ?? '');
+                                    $gambar = !empty($row['gambar']) ? htmlspecialchars($row['gambar']) : 'asset/default-product.jpg';
+                                    $judul = !empty($row['judul']) ? htmlspecialchars($row['judul']) : 'Objek Wisata';
+                                    $deskripsi = !empty($row['deskripsi']) ? htmlspecialchars($row['deskripsi']) : 'Keindahan alam yang memukau';
 
                                     echo "<div class='preview-item'>";
                                     echo "<img src='" . $gambar . "' alt='" . $judul . "' />";
@@ -93,7 +87,9 @@
                                     ['src' => 'asset/foto1.jpg', 'title' => 'Mangrove Park', 'desc' => 'Keindahan hutan mangrove yang asri'],
                                     ['src' => 'asset/foto2.jpg', 'title' => 'Pantai Sejarah', 'desc' => 'Pantai dengan pemandangan yang memukau'],
                                     ['src' => 'asset/foto3.jpg', 'title' => 'Eco Tourism', 'desc' => 'Wisata ramah lingkungan'],
-                                    ['src' => 'asset/foto4.jpg', 'title' => 'Mangrove Trail', 'desc' => 'Jalur tracking mangrove']
+                                    ['src' => 'asset/foto4.jpg', 'title' => 'Mangrove Trail', 'desc' => 'Jalur tracking mangrove'],
+                                    ['src' => 'asset/foto1.jpg', 'title' => 'Mangrove Park', 'desc' => 'Keindahan hutan mangrove yang asri'],
+                                    ['src' => 'asset/foto2.jpg', 'title' => 'Pantai Sejarah', 'desc' => 'Pantai dengan pemandangan yang memukau'],
                                 ];
 
                                 foreach ($foto_list as $foto) {
@@ -112,13 +108,6 @@
                             <a href="galeri.php" class="btn-gallery">Lihat Semua Foto</a>
                         </div>
                     </div>
-                </div>
-            </section>
-
-            <!-- QUOTE SECTION -->
-            <section class="section quote">
-                <div class="container">
-                    <p>Warisan akan budaya sejarahnya, Warisan akan kaya keindahannya</p>
                 </div>
             </section>
 
@@ -152,6 +141,41 @@
                 </div>
             </section>
 
+            <!-- PRODUK UMKM SECTION -->
+            <section class="section" id="produk-umkm">
+                <div class="container">
+                    <h2 class="section-title">Produk UMKM</h2>
+                    <p class="section-desc">Dukung produk lokal UMKM kami.</p>
+                    <div class="produk-umkm-grid">
+                        <?php
+                        include 'koneksi.php';
+                        $result = mysqli_query($conn, "SELECT * FROM produk_umkm ORDER BY created_at DESC LIMIT 2");
+                        if ($result && mysqli_num_rows($result) > 0) {
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                $gambar = !empty($row['gambar']) ? htmlspecialchars($row['gambar']) : 'asset/default-product.jpg';
+                                $harga = !empty($row['harga']) ? "Rp " . number_format($row['harga'], 0, ',', '.') : 'Harga tidak tersedia';
+                                $deskripsi_singkat = !empty($row['deskripsi']) ? substr(strip_tags($row['deskripsi']), 0, 100) . "..." : 'Deskripsi tidak tersedia.';
+                                echo "<div class='produk-card'>";
+                                echo "<a href='detail_produk.php?id=" . $row['id'] . "' class='produk-link'>";
+                                echo "<div class='produk-image'>";
+                                echo "<img src='" . $gambar . "' alt='" . htmlspecialchars($row['nama_produk']) . "'>";
+                                echo "</div>";
+                                echo "<div class='produk-content'>";
+                                echo "<h3>" . htmlspecialchars($row['nama_produk']) . "</h3>";
+                                echo "<p class='produk-deskripsi'>" . $deskripsi_singkat . "</p>";
+                                echo "<p class='produk-harga'>" . $harga . "</p>";
+                                echo "</div>";
+                                echo "</a>";
+                                echo "</div>";
+                            }
+                        } else {
+                            echo "<div class='produk-empty'>Belum ada produk UMKM yang ditambahkan.</div>";
+                        }
+                        ?>
+                    </div>
+                </div>
+            </section>
+
             <!-- BERITA SECTION -->
             <section class="section abuabu" id="blog">
                 <div class="container">
@@ -159,7 +183,7 @@
                     <div class="blog-grid">
                         <?php
                         include 'koneksi.php';
-                        $query = mysqli_query($conn, "SELECT * FROM berita WHERE status = 'active' ORDER BY tanggal_dibuat DESC");
+                        $query = mysqli_query($conn, "SELECT * FROM berita WHERE status = 'active' ORDER BY tanggal_dibuat DESC LIMIT 3");
                         if (!$query) {
                             die("Query error: " . mysqli_error($conn));
                         }
@@ -176,6 +200,9 @@
                                 </div>
                             </div>
                         <?php } ?>
+                    </div>
+                    <div class="preview-cta" style="margin-top: 30px; text-align: center;">
+                        <a href="berita.php" class="btn-gallery">Lihat Lainnya</a>
                     </div>
                 </div>
             </section>
@@ -211,8 +238,8 @@
                     </div>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 Eco Wisata Mangrove Park. All rights reserved.</p>
+            <div style='text:center; color:#fff; align-items: center; justify-content: center;display: flex;'>
+                <p>&copy; 2025 Kutaku Sejahtera. All rights reserved.</p>
             </div>
         </footer>
     </div>

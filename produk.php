@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="icon" href="logo/1.png" type="image/png">
     <script src="javascript.js"></script>
 </head>
 
@@ -17,7 +18,7 @@
     <nav class="navbar">
         <div class="container nav-flex">
             <div class="logo">
-                <a href="index.php"><img src="asset/logo-black.png" alt="Logo" /></a>
+                <a href="index.php"><img src="logo/primary-logo.png" alt="Logo" style="height: 55px;"/></a>
             </div>
             <a href="#" class="tombol-menu" id="hamburger-menu">
                 <span class="garis"></span>
@@ -68,7 +69,7 @@
                 <div class="container">
                     <h2 class="section-title">Produk UMKM Unggulan</h2>
                     <p class="section-desc">Jelajahi berbagai produk unggulan dari UMKM lokal yang berkualitas</p>
-                    
+
                     <div class="produk-grid">
                         <?php
                         include 'koneksi.php';
@@ -80,7 +81,7 @@
                                 $nama_produk = htmlspecialchars($row['nama_produk'] ?? '');
                                 $deskripsi = htmlspecialchars($row['deskripsi'] ?? '');
                                 $harga = number_format($row['harga'] ?? 0, 0, ',', '.');
-                                
+
                                 echo "<div class='produk-card'>";
                                 echo "<div class='produk-image'>";
                                 echo "<img src='" . $gambar . "' alt='" . $nama_produk . "' />";
@@ -168,4 +169,4 @@
     </div>
 </body>
 
-</html> 
+</html>
