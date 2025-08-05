@@ -13,51 +13,12 @@ include 'koneksi.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
-    <!-- NAVBAR -->
-    <nav class="navbar">
-        <div class="container nav-flex">
-            <div class="logo">
-                <a href="index.php"><img src="asset/logo-black.png" alt="Logo" /></a>
-            </div>
-            <a href="#" class="tombol-menu" id="hamburger-menu">
-                <span class="garis"></span>
-                <span class="garis"></span>
-                <span class="garis"></span>
-            </a>
-            <ul id="nav-list">
-                <li class="nav-close-mobile"><a href="#" id="close-mobile-menu" aria-label="Tutup menu">&times;</a></li>
-                <li><a href="index.php#home">Beranda</a></li>
-                <li class="dropdown">
-                    <a href="index.php#aboutus">Tentang <i class="fa fa-caret-down"></i></a>
-                    <ul class="dropdown-content">
-                        <li><a href="sejarah.php">Sejarah</a></li>
-                        <li><a href="index.php#team">Pengembangan Inovasi</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown">
-                    <a href="index.php#support">Wisata <i class="fa fa-caret-down"></i></a>
-                    <ul class="dropdown-content">
-                        <li><a href="index.php#support">Paket Wisata</a></li>
-                        <li><a href="galeri.php" class="active">Objek Wisata</a></li>
-                        <li><a href="kuta-view.php">Kuta View</a></li>
-                        <li><a href="pantai-sejarah.php">Pantai Sejarah</a></li>
-                    </ul>
-                </li>
-                <li><a href="index.php#blog">Berita</a></li>
-                <li><a href="produk.php">Produk</a></li>
-                <li><a href="contact.php">Kontak</a></li>
-                <li class="login-mobile"><a href="login.php" class="tombol tombol-login">Login Admin</a></li>
-            </ul>
-            <a href="login.php" class="tombol tombol-login login-desktop">Login Admin</a>
-        </div>
-    </nav>
-
     <div class="container-full">
         <!-- HERO SECTION -->
-        <header class="hero-section" style="height: 60vh; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('asset/background-bromo.jpg'); background-size: cover; background-position: center;">
+        <header class="hero-section" style="height: 60vh; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('asset/IMG_7487.JPG'); background-size: cover; background-position: center;">
             <div class="hero-content">
                 <h1>Galeri Wisata</h1>
-                <p>Jelajahi keindahan alam dan destinasi wisata yang memukau di Eco Wisata Mangrove Park</p>
+                <p>Jelajahi keindahan alam dan destinasi wisata yang memukau di Desa Kuala Tanjung</p>
             </div>
         </header>
 
@@ -67,7 +28,7 @@ include 'koneksi.php';
                 <div class="container">
                     <h2 class="section-title">Objek Wisata</h2>
                     <p class="section-desc">Nikmati keindahan alam dan destinasi wisata yang menakjubkan</p>
-                    
+
                     <div class="gallery-container">
                         <?php
                         // Ambil data dari tabel galeri (foto yang diupload melalui dashboard) terlebih dahulu
@@ -77,7 +38,7 @@ include 'koneksi.php';
                                 $gambar = !empty($row['gambar']) ? htmlspecialchars($row['gambar']) : 'asset/default-product.jpg';
                                 $judul = !empty($row['judul']) ? htmlspecialchars($row['judul']) : 'Objek Wisata';
                                 $deskripsi = !empty($row['deskripsi']) ? htmlspecialchars($row['deskripsi']) : 'Keindahan alam yang memukau';
-                                
+
                                 echo "<div class='gallery-item'>";
                                 echo "<a href='detail-galeri.php?id=" . $row['id'] . "&type=galeri'>";
                                 echo "<div class='gallery-image'>";
@@ -94,7 +55,7 @@ include 'koneksi.php';
                                 echo "</div>";
                             }
                         }
-                        
+
                         // Tambahkan data dari tabel objek_wisata
                         $result2 = mysqli_query($conn, "SELECT * FROM objek_wisata WHERE status = 'aktif' AND gambar IS NOT NULL AND gambar != '' ORDER BY urutan ASC, id DESC");
                         if ($result2 && mysqli_num_rows($result2) > 0) {
@@ -102,7 +63,7 @@ include 'koneksi.php';
                                 $gambar = !empty($row['gambar']) ? htmlspecialchars($row['gambar']) : 'asset/default-product.jpg';
                                 $judul = !empty($row['nama_wisata']) ? htmlspecialchars($row['nama_wisata']) : 'Objek Wisata';
                                 $deskripsi = !empty($row['deskripsi']) ? htmlspecialchars($row['deskripsi']) : 'Keindahan alam yang memukau';
-                                
+
                                 echo "<div class='gallery-item'>";
                                 echo "<a href='detail-galeri.php?id=" . $row['id'] . "&type=objek_wisata'>";
                                 echo "<div class='gallery-image'>";
@@ -119,7 +80,7 @@ include 'koneksi.php';
                                 echo "</div>";
                             }
                         }
-                        
+
                         // Jika tidak ada data sama sekali, tampilkan foto statis
                         if ((!$result || mysqli_num_rows($result) == 0) && (!$result2 || mysqli_num_rows($result2) == 0)) {
                             // Fallback ke foto statis jika belum ada data galeri
@@ -133,7 +94,7 @@ include 'koneksi.php';
                                 ['src' => 'asset/foto7.jpg', 'title' => 'Boat Tour', 'desc' => 'Tur perahu di mangrove'],
                                 ['src' => 'asset/foto8.jpg', 'title' => 'Conservation', 'desc' => 'Konservasi lingkungan']
                             ];
-                            
+
                             foreach ($foto_list as $foto) {
                                 echo "<div class='gallery-item'>";
                                 echo "<div class='gallery-image'>";
@@ -150,9 +111,12 @@ include 'koneksi.php';
                         }
                         ?>
                     </div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <a href="index.php" class="btn-back-home"><i class="fas fa-arrow-left"></i> Kembali ke Beranda</a>
+                    </div>
                 </div>
             </section>
-            
+
             <!-- INFO SECTION -->
             <section class="section abuabu">
                 <div class="container">
@@ -222,4 +186,4 @@ include 'koneksi.php';
 
     <script src="javascript.js"></script>
 </body>
-</html> 
+</html>

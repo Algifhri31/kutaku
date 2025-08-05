@@ -5,9 +5,10 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Travel</title>
+    <title>Kutaku Sejahtera</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <link rel="icon" href="logo/1.png" type="image/png">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="javascript.js"></script>
 </head>
@@ -17,7 +18,7 @@
     <nav class="navbar">
         <div class="container nav-flex">
             <div class="logo">
-                <a href=""><img src="asset/logo-black.png" alt="Logo" /></a>
+                <a href=""><img src="logo/primary-logo.png" alt="Logo" id="main-logo" style="height: 55px;"/></a>
             </div>
             <a href="#" class="tombol-menu" id="hamburger-menu">
                 <span class="garis"></span>
@@ -25,20 +26,17 @@
                 <span class="garis"></span>
             </a>
             <ul id="nav-list">
-                <li class="nav-close-mobile"><a href="#" id="close-mobile-menu" aria-label="Tutup menu">&times;</a></li>
                 <li><a href="#home">Beranda</a></li>
                 <li class="dropdown">
                     <a href="#aboutus">Tentang <i class="fa fa-caret-down"></i></a>
-                    <ul class="dropdown-content">
+                    <ul class="dropdown-content" style="list-style-type: none;">
                         <li><a href="sejarah.php">Sejarah</a></li>
                         <li><a href="#team">Pengembangan Inovasi</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
                     <a href="#support">Wisata <i class="fa fa-caret-down"></i></a>
-                    <ul class="dropdown-content">
-                        <li><a href="#support">Paket Wisata</a></li>
-                        <li><a href="galeri.php">Objek Wisata</a></li>
+                    <ul class="dropdown-content" style="list-style-type: none;">
                         <li><a href="kuta-view.php">Kuta View</a></li>
                         <li><a href="pantai-sejarah.php">Pantai Sejarah</a></li>
                     </ul>
@@ -58,9 +56,8 @@
             <div class="hero-overlay"></div>
             <!-- Video removed due to missing file - using background image instead -->
             <div class="hero-content">
-                <h1>Eco Wisata Manggrove Park</h1>
-                <p>Mengenal Eco Wisata Mangrove Lebih Dekat, Menjaga Alam sekitar Lebih Erat.</p>
-                <a href="#aboutus" class="tombol hero-cta">Info Selanjutnya</a>
+                <h1>KUTAKU SEJAHTERA</h1>
+                <p>Wisata Cerdas, Masa Depan Berkualitas</p>
             </div>
         </header>
 
@@ -81,7 +78,7 @@
                                     $gambar = !empty($row['gambar']) ? htmlspecialchars($row['gambar']) : 'asset/default-image.jpg';
                                     $judul = htmlspecialchars($row['nama_wisata']);
                                     $deskripsi = htmlspecialchars($row['deskripsi'] ?? '');
-                                    
+
                                     echo "<div class='preview-item'>";
                                     echo "<img src='" . $gambar . "' alt='" . $judul . "' />";
                                     echo "<div class='preview-overlay'>";
@@ -98,7 +95,7 @@
                                     ['src' => 'asset/foto3.jpg', 'title' => 'Eco Tourism', 'desc' => 'Wisata ramah lingkungan'],
                                     ['src' => 'asset/foto4.jpg', 'title' => 'Mangrove Trail', 'desc' => 'Jalur tracking mangrove']
                                 ];
-                                
+
                                 foreach ($foto_list as $foto) {
                                     echo "<div class='preview-item'>";
                                     echo "<img src='" . $foto['src'] . "' alt='" . $foto['title'] . "' />";
@@ -219,59 +216,6 @@
             </div>
         </footer>
     </div>
-
-    <!-- SCRIPT: MENU & LOGO -->
-    <script>
-        // Hamburger menu toggle
-        const hamburger = document.getElementById('hamburger-menu');
-        const navList = document.getElementById('nav-list');
-        hamburger.addEventListener('click', function(e) {
-            e.preventDefault();
-            navList.classList.toggle('show');
-        });
-
-        // Tutup menu mobile saat klik link
-        document.querySelectorAll('#nav-list li a').forEach(function(link) {
-            link.addEventListener('click', function() {
-                if (window.innerWidth <= 900) {
-                    navList.classList.remove('show');
-                }
-            });
-        });
-
-        // Tutup menu mobile saat resize ke desktop
-        window.addEventListener('resize', function() {
-            if (window.innerWidth > 900) {
-                navList.classList.remove('show');
-            }
-        });
-
-        // Dropdown mobile toggle
-        document.querySelectorAll('.navbar .dropdown > a').forEach(function(drop) {
-            drop.addEventListener('click', function(e) {
-                if (window.innerWidth <= 900) {
-                    e.preventDefault();
-                    const parent = this.parentElement;
-                    parent.classList.toggle('open');
-                }
-            });
-        });
-
-        // Tombol silang menu mobile
-        const closeMobileMenu = document.getElementById('close-mobile-menu');
-        if (closeMobileMenu) {
-            closeMobileMenu.addEventListener('click', function(e) {
-                e.preventDefault();
-                navList.classList.remove('show');
-            });
-        }
-
-        // Navbar font color always black
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuLinks = document.querySelectorAll('nav .menu ul li a, nav ul#nav-list li a');
-            menuLinks.forEach(link => link.style.color = '#232946');
-        });
-    </script>
 </body>
 
 </html>
