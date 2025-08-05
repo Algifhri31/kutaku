@@ -1397,7 +1397,6 @@ if ($action == 'edit' && isset($_GET['id'])) {
     <div class="admin-layout">
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <img src="asset/logo-white.png" alt="Logo">
                 <h3>Admin</h3>
             </div>
             <nav>
