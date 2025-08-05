@@ -15,18 +15,14 @@ include 'koneksi.php';
 <body>
     <div class="container-full">
         <!-- HERO SECTION -->
-        <header class="hero-section" style="height: 60vh; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('asset/IMG_7487.JPG'); background-size: cover; background-position: center;">
-            <div class="hero-content">
-                <h1>Galeri Wisata</h1>
-                <p>Jelajahi keindahan alam dan destinasi wisata yang memukau di Desa Kuala Tanjung</p>
-            </div>
+        <header class="hero-section" style="height: 60vh; background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('asset/IMG_7487.JPG'); background-size: cover; background-position: center;">
         </header>
 
         <main>
             <!-- GALLERY SECTION -->
             <section class="section">
                 <div class="container">
-                    <h2 class="section-title">Objek Wisata</h2>
+                    <h2 class="section-title">Galeri Wisata</h2>
                     <p class="section-desc">Nikmati keindahan alam dan destinasi wisata yang menakjubkan</p>
 
                     <div class="gallery-container">
@@ -178,8 +174,8 @@ include 'koneksi.php';
                     </div>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 Eco Wisata Mangrove Park. All rights reserved.</p>
+            <div style='text:center; color:#fff; align-items: center; justify-content: center;display: flex;'>
+                <p>&copy; 2025 Kutaku Sejahtera. All rights reserved.</p>
             </div>
         </footer>
     </div>

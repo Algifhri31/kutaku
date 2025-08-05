@@ -45,7 +45,7 @@ if (!$gallery_item) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         .detail-container {
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 40px 20px;
         }
@@ -169,44 +169,6 @@ if (!$gallery_item) {
     </style>
 </head>
 <body>
-    <!-- NAVBAR -->
-    <nav class="navbar">
-        <div class="container nav-flex">
-            <div class="logo">
-                <a href="index.php"><img src="asset/logo-black.png" alt="Logo" /></a>
-            </div>
-            <a href="#" class="tombol-menu" id="hamburger-menu">
-                <span class="garis"></span>
-                <span class="garis"></span>
-                <span class="garis"></span>
-            </a>
-            <ul id="nav-list">
-                <li class="nav-close-mobile"><a href="#" id="close-mobile-menu" aria-label="Tutup menu">&times;</a></li>
-                <li><a href="index.php#home">Beranda</a></li>
-                <li class="dropdown">
-                    <a href="index.php#aboutus">Tentang <i class="fa fa-caret-down"></i></a>
-                    <ul class="dropdown-content">
-                        <li><a href="sejarah.php">Sejarah</a></li>
-                        <li><a href="index.php#team">Pengembangan Inovasi</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown">
-                    <a href="index.php#support">Wisata <i class="fa fa-caret-down"></i></a>
-                    <ul class="dropdown-content">
-                        <li><a href="index.php#support">Paket Wisata</a></li>
-                        <li><a href="galeri.php" class="active">Objek Wisata</a></li>
-                        <li><a href="kuta-view.php">Kuta View</a></li>
-                        <li><a href="pantai-sejarah.php">Pantai Sejarah</a></li>
-                    </ul>
-                </li>
-                <li><a href="index.php#blog">Berita</a></li>
-                <li><a href="produk.php">Produk</a></li>
-                <li><a href="contact.php">Kontak</a></li>
-                <li class="login-mobile"><a href="login.php" class="tombol tombol-login">Login Admin</a></li>
-            </ul>
-            <a href="login.php" class="tombol tombol-login login-desktop">Login Admin</a>
-        </div>
-    </nav>
 
     <div class="container-full">
         <div class="detail-container">
@@ -217,9 +179,9 @@ if (!$gallery_item) {
 
             <div class="detail-info">
                 <img src="<?= htmlspecialchars($gallery_item['gambar']) ?>" alt="<?= htmlspecialchars($gallery_item['judul'] ?? $gallery_item['nama_wisata']) ?>" class="detail-image">
-                
+
                 <h1 class="detail-title"><?= htmlspecialchars($gallery_item['judul'] ?? $gallery_item['nama_wisata']) ?></h1>
-                
+
                 <div class="detail-meta">
                     <div class="meta-item">
                         <i class="fas fa-calendar"></i>
@@ -236,7 +198,7 @@ if (!$gallery_item) {
                     </div>
                     <?php endif; ?>
                 </div>
-                
+
                 <div class="detail-description">
                     <?= nl2br(htmlspecialchars($gallery_item['deskripsi'])) ?>
                 </div>
@@ -253,7 +215,7 @@ if (!$gallery_item) {
                     $stmt->bind_param("i", $id);
                     $stmt->execute();
                     $related_result = $stmt->get_result();
-                    
+
                     while ($related = $related_result->fetch_assoc()) {
                         echo "<div class='related-item'>";
                         echo "<a href='detail-galeri.php?id=" . $related['id'] . "&type=galeri'>";
@@ -265,7 +227,7 @@ if (!$gallery_item) {
                         echo "</a>";
                         echo "</div>";
                     }
-                    
+
                     // Jika kurang dari 4, tambahkan dari objek_wisata
                     $remaining = 4 - $related_result->num_rows;
                     if ($remaining > 0) {
@@ -274,7 +236,7 @@ if (!$gallery_item) {
                         $stmt->bind_param("i", $remaining);
                         $stmt->execute();
                         $objek_result = $stmt->get_result();
-                        
+
                         while ($objek = $objek_result->fetch_assoc()) {
                             echo "<div class='related-item'>";
                             echo "<a href='detail-galeri.php?id=" . $objek['id'] . "&type=objek_wisata'>";
@@ -322,12 +284,12 @@ if (!$gallery_item) {
                     </div>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 Eco Wisata Mangrove Park. All rights reserved.</p>
+            <div style='text:center; color:#fff; align-items: center; justify-content: center;display: flex;'>
+                <p>&copy; 2025 Kutaku Sejahtera. All rights reserved.</p>
             </div>
         </footer>
     </div>
 
     <script src="javascript.js"></script>
 </body>
-</html> 
+</html>

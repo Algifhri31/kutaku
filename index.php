@@ -11,6 +11,44 @@
     <link rel="icon" href="logo/1.png" type="image/png">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="javascript.js"></script>
+    <style>
+        .deskripsi {
+            max-width: 800px; /* Limit width on large screens */
+            margin: 40px auto; /* Center the div and add vertical spacing */
+            padding: 0 20px; /* Add horizontal padding for smaller screens */
+            text-align: center; /* Center the text */
+        }
+
+        .deskripsi p {
+            font-size: 1.1rem; /* Default font size */
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* Media query for desktop screens */
+        @media (min-width: 769px) {
+            .deskripsi p {
+                font-size: 1.3rem; /* Larger font size for desktop */
+            }
+        }
+
+        /* Media query for smaller screens */
+        @media (max-width: 768px) {
+            .deskripsi {
+                margin: 20px auto; /* Reduce vertical margin on smaller screens */
+                padding: 0 15px; /* Adjust padding */
+            }
+            .deskripsi p {
+                font-size: 1rem; /* Slightly smaller font size on smaller screens */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .deskripsi p {
+                font-size: 0.9rem; /* Even smaller font size on very small screens */
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -29,18 +67,18 @@
                 <li><a href="#home">Beranda</a></li>
                 <li><a href="#team">Inovasi</a></li>
                 <li class="dropdown">
-                    <a href="#support">Wisata <i class="fa fa-caret-down"></i></a>
+                    <a href="">Wisata <i class="fa fa-caret-down"></i></a>
                     <ul class="dropdown-content" style="list-style-type: none;">
                         <li><a href="kuta-view.php">Kuta View</a></li>
                         <li><a href="pantai-sejarah.php">Pantai Sejarah</a></li>
                     </ul>
                 </li>
+                <li><a href="#produk-umkm">Produk</a></li>
                 <li><a href="#blog">Berita</a></li>
-                <li><a href="produk.php">Produk</a></li>
                 <li><a href="#contact">Kontak</a></li>
-                <li class="login-mobile"><a href="login.php" class="tombol tombol-login">Login Admin</a></li>
+                <!--<li class="login-mobile"><a href="login.php" class="tombol tombol-login">Login Admin</a></li>-->
             </ul>
-            <a href="login.php" class="tombol tombol-login login-desktop">Login Admin</a>
+            <!--<a href="login.php" class="tombol tombol-login login-desktop">Login Admin</a>-->
         </div>
     </nav>
 
@@ -51,16 +89,18 @@
             <!-- Video removed due to missing file - using background image instead -->
             <div class="hero-content">
                 <h1>KUTAKU SEJAHTERA</h1>
-                <p>Wisata Cerdas, Masa Depan Berkualitas</p>
             </div>
         </header>
+
+        <div class="deskripsi">
+            <p>Kutaku Sejahtera merupakan kepanjangan dari Kuala Tanjung Ku Sejahtera. Sebagai simbol dari kebanggaan masyarakatnya. Kuala Tanjung adalah desa pesisir yang tumbuh di tengah kawasan industri besar seperti PT Inalum.</p>
+        </div>
 
         <main>
             <!-- GALLERY PREVIEW SECTION -->
             <section class="section" id="gallery">
                 <div class="container">
-                    <h2 class="section-title">Galeri</h2>
-                    <p class="section-desc">Jelajahi keindahan alam dan destinasi wisata yang memukau</p>
+                    <h2 class="section-title">Highlight</h2>
                     <div class="gallery-preview">
                         <div class="preview-grid">
                             <?php
@@ -105,7 +145,7 @@
                             ?>
                         </div>
                         <div class="preview-cta">
-                            <a href="galeri.php" class="btn-gallery">Lihat Semua Foto</a>
+                            <a href="galeri.php" class="btn-gallery">Lihat Semua</a>
                         </div>
                     </div>
                 </div>
@@ -119,7 +159,7 @@
                     <div class="inovasi-grid">
                         <?php
                         include 'koneksi.php';
-                        $result = mysqli_query($conn, "SELECT * FROM inovasi ORDER BY tanggal_dibuat DESC");
+                        $result = mysqli_query($conn, "SELECT * FROM inovasi ORDER BY tanggal_dibuat DESC LIMIT 4");
                         if ($result && mysqli_num_rows($result) > 0) {
                             while ($row = mysqli_fetch_assoc($result)) {
                                 $gambar = !empty($row['gambar']) ? htmlspecialchars($row['gambar']) : 'asset/default-image.jpg';
@@ -138,7 +178,11 @@
                         }
                         ?>
                     </div>
+                    <div class="preview-cta">
+                        <a href="inovasi.php" class="btn-gallery" style="margin: 20px">Lihat Selengkapnya</a>
+                    </div>
                 </div>
+
             </section>
 
             <!-- PRODUK UMKM SECTION -->
@@ -149,7 +193,7 @@
                     <div class="produk-umkm-grid">
                         <?php
                         include 'koneksi.php';
-                        $result = mysqli_query($conn, "SELECT * FROM produk_umkm ORDER BY created_at DESC LIMIT 2");
+                        $result = mysqli_query($conn, "SELECT * FROM produk_umkm ORDER BY created_at DESC LIMIT 9");
                         if ($result && mysqli_num_rows($result) > 0) {
                             while ($row = mysqli_fetch_assoc($result)) {
                                 $gambar = !empty($row['gambar']) ? htmlspecialchars($row['gambar']) : 'asset/default-product.jpg';
@@ -168,15 +212,14 @@
                                 echo "</a>";
                                 echo "</div>";
                             }
-                        } else {
-                            echo "<div class='produk-empty'>Belum ada produk UMKM yang ditambahkan.</div>";
                         }
                         ?>
                     </div>
+                    <div class="preview-cta">
+                        <a href="produk.php" class="btn-gallery" style="margin: 40px">Lihat Lainnya</a>
+                    </div>
                 </div>
             </section>
-
-            <!-- BERITA SECTION -->
             <section class="section abuabu" id="blog">
                 <div class="container">
                     <h2 class="section-title">Berita</h2>
@@ -201,7 +244,7 @@
                             </div>
                         <?php } ?>
                     </div>
-                    <div class="preview-cta" style="margin-top: 30px; text-align: center;">
+                    <div class="preview-cta" style="margin-top: 40px; text-align: center;">
                         <a href="berita.php" class="btn-gallery">Lihat Lainnya</a>
                     </div>
                 </div>
@@ -210,7 +253,7 @@
 
         <!-- FOOTER -->
         <footer id="contact">
-            <div class="footer-grid">
+            <div class="footer-grid" style="padding: 20px 40px">
                 <div>
                     <h5>Informasi</h5>
                     <p>Eco Wisata Mangrove Park adalah destinasi wisata alam yang menawarkan pengalaman unik menjelajahi ekosistem mangrove dengan pemandangan yang memukau dan udara yang segar.</p>

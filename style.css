@@ -80,7 +80,7 @@ img { max-width: 100%; display: block; }
   .nav-flex { height: 60px; }
   .tombol-menu { display: flex; z-index: 210; position: relative; }
   #nav-list { position: fixed; top: -100vh; left: 0; width: 100vw; height: auto; background: #fff; flex-direction: column; align-items: flex-start; gap: 0; padding: 80px 0 20px 0; box-shadow: 0 2px 16px rgba(44,62,80,0.10); transition: top 0.4s ease-in-out; z-index: 200; }
-  #nav-list.show { top: 0; }
+  #nav-list.active { top: 0; }
   #nav-list li { width: 100%; border-bottom: 1px solid #f0f0f0; }
   #nav-list li a { display: block; width: 100%; padding: 16px 28px; font-size: 1.1rem; }
   .login-desktop { display: none; }
@@ -125,7 +125,7 @@ img { max-width: 100%; display: block; }
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('asset/IMG_7487.JPG'); /* Darker overlay */
+    background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('asset/IMG_7487.JPG'); /* Darker overlay */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
