@@ -211,8 +211,8 @@ ALTER TABLE `berita`
 --
 -- Indeks untuk tabel `inovasi`
 --
-ALTER TABLE `inovasi`
-  ADD PRIMARY KEY (`id`);
+--ALTER TABLE `inovasi`
+ -- ADD PRIMARY KEY (`id`);
 
 --
 -- Indeks untuk tabel `galeri`
