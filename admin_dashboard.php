@@ -1397,7 +1397,7 @@ if ($action == 'edit' && isset($_GET['id'])) {
     <div class="admin-layout">
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h3>Admin</h3>
+                <h3>Admin Panel</h3>
             </div>
             <nav>
                 <a href="admin_dashboard.php?page=home" class="<?= $page=='home'?'active':'' ?>"><i class="fa-solid fa-gauge"></i> Dashboard</a>

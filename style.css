@@ -125,7 +125,7 @@ img { max-width: 100%; display: block; }
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('asset/IMG_7487.JPG'); /* Darker overlay */
+    background: url('asset/IMG_7487.JPG'); /* Darker overlay */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
